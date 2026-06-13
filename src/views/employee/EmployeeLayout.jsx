@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { toast } from '../../components/ui/Toast';
 import { useNavigate } from 'react-router-dom';
+import { initialBookings } from '../../data/mockData';
 
 const navItems = [
   {
@@ -53,6 +54,17 @@ const EmployeeLayout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Contar solicitudes de cancelación pendientes
+  const cancelCount = (() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('estetica_bookings') || '[]');
+      const all = [...initialBookings, ...stored];
+      return all.filter(
+        (b) => b.salonId === user?.businessId && b.cancelRequest && b.status !== 'cancelled' && b.status !== 'completed'
+      ).length;
+    } catch { return 0; }
+  })();
+
   const handleLogout = () => {
     logout();
     toast.info('Sesión cerrada.');
@@ -83,20 +95,36 @@ const EmployeeLayout = ({ children }) => {
 
         {/* Nav */}
         <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                isActive(item)
-                  ? 'bg-indigo-50 text-indigo-700'
-                  : 'text-primary-500 hover:bg-gray-50 hover:text-secondary'
-              }`}
-            >
-              <span className={isActive(item) ? 'text-indigo-600' : 'text-primary-400'}>{item.icon}</span>
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const active = isActive(item);
+            const showBadge = item.to === '/empleado/agenda' && cancelCount > 0;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  active
+                    ? 'bg-indigo-50 text-indigo-700'
+                    : 'text-primary-500 hover:bg-gray-50 hover:text-secondary'
+                }`}
+              >
+                <span className={`relative ${active ? 'text-indigo-600' : 'text-primary-400'}`}>
+                  {item.icon}
+                  {showBadge && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
+                      {cancelCount}
+                    </span>
+                  )}
+                </span>
+                {item.label}
+                {showBadge && (
+                  <span className="ml-auto bg-red-100 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    {cancelCount}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Logout */}

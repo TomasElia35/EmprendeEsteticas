@@ -6,6 +6,7 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
   const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [depositDeclared, setDepositDeclared] = useState(false); // cliente declara que va a transferir
   const [bookingData, setBookingData] = useState({
     serviceId: null,
     professionalId: null,
@@ -15,6 +16,8 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
     clientEmail: user?.email || '',
     addRecommendedProduct: false,
   });
+
+  const depositConfig = salon.depositConfig;
 
   // Turnos ya existentes (mock + localStorage)
   const allBookings = (() => {
@@ -49,6 +52,7 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
   const handlePrev = () => setStep((s) => s - 1);
 
   const handleConfirm = () => {
+    const hasDeposit = depositConfig?.required && depositDeclared;
     onComplete({
       id: `b-${Date.now()}`,
       salonId: salon.id,
@@ -66,6 +70,10 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
         ? `Interesado en producto recomendado`
         : '',
       payment: null,
+      deposit: hasDeposit
+        ? { amount: depositConfig.amount, paid: true, confirmedByAdmin: false, refunded: null }
+        : null,
+      cancelRequest: null,
     });
   };
 
@@ -73,7 +81,12 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
     if (step === 1) return !!bookingData.serviceId;
     if (step === 2) return !!bookingData.professionalId;
     if (step === 3) return !!bookingData.time;
-    if (step === 4) return bookingData.clientName.trim().length > 0;
+    if (step === 4) {
+      if (bookingData.clientName.trim().length === 0) return false;
+      // Si hay seña requerida, el cliente debe declararla
+      if (depositConfig?.required && !depositDeclared) return false;
+      return true;
+    }
     return false;
   };
 
@@ -301,6 +314,61 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
                   />
                   <span className="text-xs text-secondary font-medium">Quiero consultar sobre estos productos al llegar</span>
                 </label>
+              </div>
+            )}
+
+            {/* ── SEÑA ─────────────────────────────────────────── */}
+            {depositConfig?.required && (
+              <div className="border-2 border-amber-300 rounded-xl p-4 bg-amber-50 space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🔒</span>
+                  <div>
+                    <h5 className="font-bold text-secondary text-sm">Seña requerida para confirmar</h5>
+                    <p className="text-xs text-amber-700">
+                      Este local requiere una seña de{' '}
+                      <strong>${depositConfig.amount.toLocaleString('es-AR')}</strong> para reservar.
+                    </p>
+                  </div>
+                </div>
+
+                {depositConfig.alias && (
+                  <div className="bg-white rounded-lg p-3 border border-amber-200 text-xs space-y-1">
+                    <p className="font-semibold text-secondary">Datos de transferencia:</p>
+                    <p className="text-primary-600">📋 Alias: <strong>{depositConfig.alias}</strong></p>
+                    <p className="text-amber-700 font-medium">Monto: ${depositConfig.amount.toLocaleString('es-AR')}</p>
+                  </div>
+                )}
+
+                {depositConfig.policy && (
+                  <p className="text-xs text-amber-600 italic">
+                    ⚠️ {depositConfig.policy}
+                  </p>
+                )}
+
+                <label
+                  id="deposit-declared-label"
+                  className={`flex items-start gap-3 cursor-pointer p-3 rounded-lg border-2 transition-colors ${
+                    depositDeclared ? 'border-green-400 bg-green-50' : 'border-amber-200 bg-white'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    id="deposit-declared-checkbox"
+                    checked={depositDeclared}
+                    onChange={(e) => setDepositDeclared(e.target.checked)}
+                    className="w-4 h-4 mt-0.5 rounded accent-green-600 flex-shrink-0"
+                  />
+                  <span className="text-xs text-secondary font-medium leading-relaxed">
+                    Declaro que realizaré la transferencia de la seña antes del turno.
+                    Entiendo que el local confirmará la recepción.
+                  </span>
+                </label>
+
+                {!depositDeclared && (
+                  <p className="text-xs text-red-500 font-medium">
+                    ⚠️ Debés confirmar la seña para poder reservar.
+                  </p>
+                )}
               </div>
             )}
           </div>

@@ -20,6 +20,15 @@ const BusinessConfigView = () => {
     themeColor: originalSalon?.themeColor || '#a37c6d',
   });
 
+  const [depositConfig, setDepositConfig] = useState({
+    required: originalSalon?.depositConfig?.required || false,
+    amount: originalSalon?.depositConfig?.amount || 0,
+    alias: originalSalon?.depositConfig?.alias || '',
+    mpLink: originalSalon?.depositConfig?.mpLink || '',
+    policy: originalSalon?.depositConfig?.policy || '',
+    allowDirectCancelWithout: originalSalon?.depositConfig?.allowDirectCancelWithout ?? true,
+  });
+
   const [promo, setPromo] = useState({
     active: originalSalon?.promotionModal?.active || false,
     title: originalSalon?.promotionModal?.title || '',
@@ -43,10 +52,19 @@ const BusinessConfigView = () => {
     toast.success(promo.active ? 'Modal de promoción activado.' : 'Modal de promoción desactivado.');
   };
 
+  const handleSaveDepositConfig = () => {
+    if (depositConfig.required && !depositConfig.amount) {
+      toast.error('Ingresá el monto de la seña.');
+      return;
+    }
+    toast.success('Política de turnos guardada correctamente.');
+  };
+
   const sections = [
     { id: 'info', label: 'Información general' },
     { id: 'appearance', label: 'Apariencia' },
     { id: 'promo', label: 'Modal de Promoción' },
+    { id: 'policy', label: 'Política de turnos' },
   ];
 
   return (
@@ -288,6 +306,125 @@ const BusinessConfigView = () => {
 
             <button id="save-promo-btn" onClick={handleSavePromo} className="btn-primary">
               {promo.active ? 'Activar y guardar' : 'Desactivar modal'}
+            </button>
+          </div>
+        )}
+
+        {/* ── POLICY SECTION ───────────────────────────────────── */}
+        {activeSection === 'policy' && (
+          <div className="bg-white rounded-2xl border border-primary-100 shadow-sm p-6 space-y-6">
+            <div>
+              <h2 className="font-bold text-secondary">Política de Turnos y Señas</h2>
+              <p className="text-xs text-primary-400 mt-0.5">
+                Configurá si requerís un depósito para confirmar reservas y cómo manejar las cancelaciones.
+              </p>
+            </div>
+
+            {/* Toggle seña requerida */}
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <div>
+                <p className="font-semibold text-secondary text-sm">¿Requerir seña para confirmar turnos?</p>
+                <p className="text-xs text-primary-400 mt-0.5">
+                  Si está activo, el cliente debe declarar que transferirá la seña al reservar.
+                </p>
+              </div>
+              <button
+                id="deposit-required-toggle"
+                onClick={() => setDepositConfig({ ...depositConfig, required: !depositConfig.required })}
+                className={`relative w-12 h-6 rounded-full transition-colors ${
+                  depositConfig.required ? 'bg-green-500' : 'bg-gray-200'
+                }`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                  depositConfig.required ? 'translate-x-6' : 'translate-x-0'
+                }`} />
+              </button>
+            </div>
+
+            {depositConfig.required && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <div>
+                  <label className="block text-xs font-medium text-primary-600 mb-1">Monto de la seña ($)</label>
+                  <input
+                    id="deposit-amount-input"
+                    type="number"
+                    min="0"
+                    value={depositConfig.amount}
+                    onChange={(e) => setDepositConfig({ ...depositConfig, amount: parseFloat(e.target.value) || 0 })}
+                    className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400"
+                    placeholder="Ej: 5000"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-primary-600 mb-1">Alias de transferencia</label>
+                  <input
+                    id="deposit-alias-input"
+                    type="text"
+                    value={depositConfig.alias}
+                    onChange={(e) => setDepositConfig({ ...depositConfig, alias: e.target.value })}
+                    className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400"
+                    placeholder="Ej: misalon.cba"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-medium text-primary-600 mb-1">Link de MercadoPago (opcional)</label>
+                  <input
+                    id="deposit-mp-input"
+                    type="url"
+                    value={depositConfig.mpLink}
+                    onChange={(e) => setDepositConfig({ ...depositConfig, mpLink: e.target.value })}
+                    className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400"
+                    placeholder="https://mpago.la/..."
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-medium text-primary-600 mb-1">Política de cancelación con seña</label>
+                  <textarea
+                    id="deposit-policy-input"
+                    value={depositConfig.policy}
+                    onChange={(e) => setDepositConfig({ ...depositConfig, policy: e.target.value })}
+                    rows={2}
+                    className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400 resize-none"
+                    placeholder="Ej: La seña no es reembolsable si se cancela con menos de 24hs..."
+                  />
+                  <p className="text-xs text-primary-400 mt-1">Este texto se muestra al cliente al momento de reservar.</p>
+                </div>
+              </div>
+            )}
+
+            {/* Toggle cancelación directa sin seña */}
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+              <div>
+                <p className="font-semibold text-secondary text-sm">Permitir cancelación directa sin seña (con +24hs)</p>
+                <p className="text-xs text-primary-400 mt-0.5">
+                  Si está activo, los turnos sin seña pueden cancelarse automáticamente con más de 24hs de anticipación.
+                </p>
+              </div>
+              <button
+                id="allow-direct-cancel-toggle"
+                onClick={() => setDepositConfig({ ...depositConfig, allowDirectCancelWithout: !depositConfig.allowDirectCancelWithout })}
+                className={`relative w-12 h-6 rounded-full transition-colors ${
+                  depositConfig.allowDirectCancelWithout ? 'bg-green-500' : 'bg-gray-200'
+                }`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                  depositConfig.allowDirectCancelWithout ? 'translate-x-6' : 'translate-x-0'
+                }`} />
+              </button>
+            </div>
+
+            {/* Info box */}
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-xs text-blue-700">
+              <p className="font-semibold mb-1">💡 ¿Cómo funciona el flujo?</p>
+              <ul className="space-y-1 list-disc list-inside">
+                <li>Con seña: el cliente debe contactar al local por WhatsApp para cancelar. También puede solicitar la cancelación desde la app y vos decidís si devolver o no la seña.</li>
+                <li>Sin seña (con +24hs): el cliente cancela directamente si está habilitado arriba.</li>
+                <li>Las solicitudes de cancelación aparecen en tu Agenda con un badge de notificación rojo.</li>
+              </ul>
+            </div>
+
+            <button id="save-policy-btn" onClick={handleSaveDepositConfig} className="btn-primary">
+              Guardar política de turnos
             </button>
           </div>
         )}

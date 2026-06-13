@@ -4,6 +4,7 @@ import { initialSalons, initialBookings } from '../../data/mockData';
 import { applyDiscount } from '../../data/mockCommissions';
 import EmployeeLayout from './EmployeeLayout';
 import PaymentModal from '../../components/PaymentModal';
+import CancelRequestsPanel from '../../components/CancelRequestsPanel';
 import { toast } from '../../components/ui/Toast';
 
 const STATUS_LABELS = {
@@ -51,6 +52,37 @@ const EmployeeAgendaView = () => {
     toast.success('Pago registrado correctamente.');
   };
 
+  // Confirmar seña recibida
+  const handleConfirmDeposit = (bookingId) => {
+    const updated = bookings.map(b =>
+      b.id === bookingId && b.deposit
+        ? { ...b, deposit: { ...b.deposit, confirmedByAdmin: true } }
+        : b
+    );
+    setBookings(updated);
+    persistBookings(updated);
+    toast.success('Seña confirmada.');
+  };
+
+  // Resolver solicitud de cancelación
+  const handleResolveCancelRequest = (bookingId, action) => {
+    const updated = bookings.map(b => {
+      if (b.id !== bookingId) return b;
+      if (action === 'reject') return { ...b, cancelRequest: null };
+      const refunded = action === 'cancel_refund';
+      return {
+        ...b,
+        status: 'cancelled',
+        cancelRequest: null,
+        deposit: b.deposit ? { ...b.deposit, refunded } : null,
+      };
+    });
+    setBookings(updated);
+    persistBookings(updated);
+    if (action === 'reject') toast.info('Solicitud rechazada. El turno sigue activo.');
+    else toast.success(action === 'cancel_refund' ? 'Turno cancelado. Seña a devolver.' : 'Turno cancelado. Seña retenida.');
+  };
+
   const handleAddBooking = () => {
     if (!newBooking.clientName || !newBooking.serviceId || !newBooking.time) {
       toast.error('Completá nombre, servicio y horario.');
@@ -76,6 +108,8 @@ const EmployeeAgendaView = () => {
       discount,
       notes: newBooking.notes,
       payment: null,
+      deposit: null,
+      cancelRequest: null,
     };
 
     const updated = [...bookings, booking];
@@ -114,6 +148,48 @@ const EmployeeAgendaView = () => {
             </button>
           </div>
         </div>
+
+        {/* Panel de solicitudes de cancelación */}
+        <CancelRequestsPanel
+          salon={salon}
+          bookings={bookings.filter(b => b.salonId === user?.businessId)}
+          onResolve={handleResolveCancelRequest}
+        />
+
+        {/* Señas pendientes de confirmar */}
+        {(() => {
+          const pendingDeposits = bookings.filter(
+            b => b.salonId === user?.businessId && b.deposit?.paid && !b.deposit?.confirmedByAdmin && b.status !== 'cancelled'
+          );
+          if (pendingDeposits.length === 0) return null;
+          return (
+            <div className="bg-white rounded-2xl border-2 border-yellow-200 shadow-sm p-5 space-y-3">
+              <h3 className="font-bold text-secondary flex items-center gap-2 text-sm">
+                <span className="text-lg">⚠️</span> Señas pendientes ({pendingDeposits.length})
+              </h3>
+              <ul className="space-y-2">
+                {pendingDeposits.map(b => {
+                  const svc = salon?.services.find(s => s.id === b.serviceId);
+                  return (
+                    <li key={b.id} className="flex flex-wrap items-center justify-between gap-3 bg-yellow-50 rounded-xl px-4 py-3">
+                      <div>
+                        <p className="font-semibold text-secondary text-sm">{b.clientName}</p>
+                        <p className="text-xs text-primary-400">{svc?.name} — {b.date} {b.time}hs · Seña ${b.deposit.amount.toLocaleString('es-AR')}</p>
+                      </div>
+                      <button
+                        id={`confirm-deposit-emp-${b.id}`}
+                        onClick={() => handleConfirmDeposit(b.id)}
+                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-colors"
+                      >
+                        ✅ Confirmar recepción
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })()}
 
         {/* Nuevo turno form */}
         {showNewForm && (

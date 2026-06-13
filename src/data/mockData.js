@@ -23,6 +23,15 @@ export const initialSalons = [
     openHours: "09:00 - 20:00",
     themeColor: "#a37c6d",
     monthlyStats: { bookings: 48, revenue: 920000, newClients: 12 },
+    // Configuración de seña para confirmación de turnos
+    depositConfig: {
+      required: true,
+      amount: 5000,           // monto fijo en ARS
+      alias: 'elegance.studio',
+      mpLink: '',             // link de MercadoPago (opcional)
+      policy: 'La devolución de la seña queda a criterio del negocio.',
+      allowDirectCancelWithout: true, // cancelación directa sin seña con +24hs
+    },
     // Modal de promoción que ve el cliente al entrar al perfil del local
     promotionModal: {
       active: true,
@@ -106,6 +115,14 @@ export const initialSalons = [
     openHours: "10:00 - 21:00",
     themeColor: "#2c3e50",
     monthlyStats: { bookings: 62, revenue: 744000, newClients: 18 },
+    depositConfig: {
+      required: false,
+      amount: 0,
+      alias: '',
+      mpLink: '',
+      policy: '',
+      allowDirectCancelWithout: true,
+    },
     promotionModal: {
       active: false,
       title: "",
@@ -185,6 +202,14 @@ export const initialSalons = [
     openHours: "09:00 - 21:00",
     themeColor: "#7c3aed",
     monthlyStats: { bookings: 75, revenue: 1125000, newClients: 22 },
+    depositConfig: {
+      required: true,
+      amount: 8000,
+      alias: 'aura.spa.ba',
+      mpLink: '',
+      policy: 'La seña no es reembolsable si se cancela con menos de 48hs de anticipación.',
+      allowDirectCancelWithout: true,
+    },
     promotionModal: {
       active: true,
       title: "¡Combo Spa de Lunes a Miércoles! 🌿",
@@ -269,6 +294,9 @@ export const initialBookings = [
     discount: null,
     notes: "",
     payment: null,
+    // Seña pagada y pendiente de confirmar por el admin
+    deposit: { amount: 5000, paid: true, confirmedByAdmin: false, refunded: null },
+    cancelRequest: null,
   },
   {
     id: "b-002",
@@ -289,6 +317,8 @@ export const initialBookings = [
       method: "efectivo",
       paidAt: new Date().toISOString(),
     },
+    deposit: null,
+    cancelRequest: null,
   },
   {
     id: "b-003",
@@ -301,10 +331,13 @@ export const initialBookings = [
     clientPhone: "1177889900",
     clientEmail: "vale@test.com",
     clientId: null,
-    status: "pending",
+    status: "confirmed",
     discount: null,
     notes: "Primera vez en el salón",
     payment: null,
+    deposit: { amount: 5000, paid: true, confirmedByAdmin: true, refunded: null },
+    // Solicitud de cancelación pendiente de resolución
+    cancelRequest: { requestedAt: new Date().toISOString(), reason: 'No voy a poder ir, me surgió algo.' },
   },
   {
     id: "b-004",
@@ -321,6 +354,8 @@ export const initialBookings = [
     discount: null,
     notes: "",
     payment: null,
+    deposit: null,
+    cancelRequest: null,
   },
 ];
 

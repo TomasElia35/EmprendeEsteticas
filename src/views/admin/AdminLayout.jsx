@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { initialBookings } from '../../data/mockData';
 
 const ADMIN_LINKS = [
   { to: '/admin', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', exact: true },
@@ -16,6 +17,17 @@ const AdminLayout = ({ children }) => {
   const { user } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Contar solicitudes de cancelación pendientes
+  const cancelCount = (() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('estetica_bookings') || '[]');
+      const all = [...initialBookings, ...stored];
+      return all.filter(
+        (b) => b.salonId === user?.businessId && b.cancelRequest && b.status !== 'cancelled' && b.status !== 'completed'
+      ).length;
+    } catch { return 0; }
+  })();
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)]">
@@ -42,22 +54,35 @@ const AdminLayout = ({ children }) => {
               ? location.pathname === link.to
               : location.pathname.startsWith(link.to) && link.to !== '/admin';
             const isAdminExact = link.exact && location.pathname === '/admin';
+            const showBadge = link.to === '/admin/agenda' && cancelCount > 0;
 
             return (
               <Link
                 key={link.to}
                 to={link.to}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   active || isAdminExact
                     ? 'bg-primary-600 text-white shadow-sm'
                     : 'text-primary-700 hover:bg-primary-50'
                 }`}
               >
-                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={link.icon} />
-                </svg>
+                <span className="relative">
+                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={link.icon} />
+                  </svg>
+                  {showBadge && (
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
+                      {cancelCount}
+                    </span>
+                  )}
+                </span>
                 {link.label}
+                {showBadge && (
+                  <span className="ml-auto bg-red-100 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    {cancelCount}
+                  </span>
+                )}
               </Link>
             );
           })}
