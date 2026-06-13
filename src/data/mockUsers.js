@@ -5,6 +5,7 @@
 export const ROLES = {
   SUPERADMIN: 'superadmin',
   ADMIN: 'admin',
+  EMPLOYEE: 'employee',
   CLIENT: 'client',
 };
 
@@ -29,7 +30,7 @@ export const mockUsers = [
     password: 'admin123',
     phone: '1122334455',
     avatar: 'https://ui-avatars.com/api/?name=Carolina+Vidal&background=a37c6d&color=fff&size=128',
-    businessId: 1, // ← Asignado a L'Elegance Studio
+    businessId: 1,
   },
   {
     id: 'u-admin-002',
@@ -39,7 +40,7 @@ export const mockUsers = [
     password: 'admin123',
     phone: '1133445566',
     avatar: 'https://ui-avatars.com/api/?name=Roberto+Suarez&background=a37c6d&color=fff&size=128',
-    businessId: 2, // ← Asignado a Gentleman's Club
+    businessId: 2,
   },
   {
     id: 'u-admin-003',
@@ -49,7 +50,29 @@ export const mockUsers = [
     password: 'admin123',
     phone: '1144556677',
     avatar: 'https://ui-avatars.com/api/?name=Patricia+Mendez&background=a37c6d&color=fff&size=128',
-    businessId: 3, // ← Asignado a Aura Belleza & Spa
+    businessId: 3,
+  },
+
+  // ── EMPLEADOS ──────────────────────────────────────────────────────────────
+  {
+    id: 'u-emp-001',
+    role: ROLES.EMPLOYEE,
+    name: 'Pedro López',
+    email: 'pedro@elegance.com',
+    password: 'emp123',
+    phone: '1155001122',
+    avatar: 'https://ui-avatars.com/api/?name=Pedro+Lopez&background=6366f1&color=fff&size=128',
+    businessId: 1, // L'Elegance Studio
+  },
+  {
+    id: 'u-emp-002',
+    role: ROLES.EMPLOYEE,
+    name: 'Camila Rivas',
+    email: 'camila@gentleman.com',
+    password: 'emp123',
+    phone: '1155003344',
+    avatar: 'https://ui-avatars.com/api/?name=Camila+Rivas&background=6366f1&color=fff&size=128',
+    businessId: 2, // Gentleman's Club
   },
 
   // ── CLIENTES ───────────────────────────────────────────────────────────────
@@ -78,10 +101,34 @@ export const mockUsers = [
 ];
 
 // Helper para buscar usuario por email/password (simula autenticación)
-export const findUser = (email, password) =>
-  mockUsers.find(
+// También busca en clientes registrados dinámicamente (localStorage)
+export const findUser = (email, password) => {
+  const staticUser = mockUsers.find(
     (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
-  ) || null;
+  );
+  if (staticUser) return staticUser;
+
+  // Buscar en clientes registrados dinámicamente
+  try {
+    const stored = JSON.parse(localStorage.getItem('estetica_registered_clients') || '[]');
+    return stored.find(
+      (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password
+    ) || null;
+  } catch {
+    return null;
+  }
+};
 
 // Helper para buscar usuario por ID
-export const findUserById = (id) => mockUsers.find((u) => u.id === id) || null;
+export const findUserById = (id) => {
+  const staticUser = mockUsers.find((u) => u.id === id);
+  if (staticUser) return staticUser;
+
+  // Buscar en clientes registrados dinámicamente
+  try {
+    const stored = JSON.parse(localStorage.getItem('estetica_registered_clients') || '[]');
+    return stored.find((u) => u.id === id) || null;
+  } catch {
+    return null;
+  }
+};

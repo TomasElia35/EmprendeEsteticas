@@ -16,9 +16,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    // Redirigir al home correcto según el rol actual
     if (user.role === 'superadmin') return <Navigate to="/superadmin" replace />;
     if (user.role === 'admin') return <Navigate to="/admin" replace />;
+    if (user.role === 'employee') return <Navigate to="/empleado" replace />;
     return <Navigate to="/" replace />;
   }
 

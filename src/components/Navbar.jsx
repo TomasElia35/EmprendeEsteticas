@@ -6,12 +6,14 @@ import { toast } from './ui/Toast';
 const ROLE_LABELS = {
   superadmin: 'Super Admin',
   admin: 'Administrador',
+  employee: 'Empleado',
   client: 'Cliente',
 };
 
 const ROLE_COLORS = {
   superadmin: 'bg-secondary text-white',
   admin: 'bg-primary-700 text-white',
+  employee: 'bg-indigo-500 text-white',
   client: 'bg-primary-100 text-primary-800',
 };
 
@@ -61,6 +63,11 @@ const Navbar = () => {
                   <NavLink to="/admin" active={isActive('/admin')} label="Dashboard" />
                 </div>
               )}
+              {user.role === 'employee' && (
+                <div className="hidden md:flex gap-1">
+                  <NavLink to="/empleado" active={isActive('/empleado')} label="Mi Panel" />
+                </div>
+              )}
               {user.role === 'client' && (
                 <div className="hidden md:flex gap-1">
                   <NavLink to="/" active={location.pathname === '/'} label="Explorar" />
@@ -97,6 +104,15 @@ const Navbar = () => {
                           className="block px-4 py-2.5 text-sm text-primary-700 hover:bg-primary-50 transition-colors"
                         >
                           Mi perfil
+                        </Link>
+                      )}
+                      {user.role === 'admin' && (
+                        <Link
+                          to="/admin/configuracion"
+                          onClick={() => setMenuOpen(false)}
+                          className="block px-4 py-2.5 text-sm text-primary-700 hover:bg-primary-50 transition-colors"
+                        >
+                          Configurar mi local
                         </Link>
                       )}
                       <button

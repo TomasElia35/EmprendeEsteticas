@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
     return { success: true, user: found };
   };
 
-  // Registro de nuevos clientes (se guarda en sessionStorage como simulación)
+  // Registro de nuevos clientes
   const register = ({ name, email, password, phone }) => {
     const exists = findUser(email, password);
     if (exists) return { success: false, error: 'El email ya está registrado.' };
@@ -50,14 +50,33 @@ export const AuthProvider = ({ children }) => {
       favoriteProfessionalId: null,
     };
 
-    // Guardar en localStorage para persistir en esta sesión de prototipo
     const stored = JSON.parse(localStorage.getItem('estetica_registered_clients') || '[]');
     stored.push(newUser);
     localStorage.setItem('estetica_registered_clients', JSON.stringify(stored));
 
     setUser(newUser);
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ id: newUser.id, isRegistered: true }));
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ id: newUser.id }));
     return { success: true, user: newUser };
+  };
+
+  // Actualizar datos del usuario (para el perfil del cliente)
+  const updateUser = (fields) => {
+    if (!user) return { success: false, error: 'No hay usuario activo.' };
+
+    const updated = { ...user, ...fields };
+    setUser(updated);
+
+    // Persistir si es cliente registrado dinámicamente
+    try {
+      const stored = JSON.parse(localStorage.getItem('estetica_registered_clients') || '[]');
+      const idx = stored.findIndex((u) => u.id === user.id);
+      if (idx !== -1) {
+        stored[idx] = updated;
+        localStorage.setItem('estetica_registered_clients', JSON.stringify(stored));
+      }
+    } catch (_) {}
+
+    return { success: true, user: updated };
   };
 
   const logout = () => {
@@ -67,11 +86,16 @@ export const AuthProvider = ({ children }) => {
 
   const isSuperAdmin = () => user?.role === ROLES.SUPERADMIN;
   const isAdmin = () => user?.role === ROLES.ADMIN;
+  const isEmployee = () => user?.role === ROLES.EMPLOYEE;
   const isClient = () => user?.role === ROLES.CLIENT;
   const isLoggedIn = () => !!user;
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register, isSuperAdmin, isAdmin, isClient, isLoggedIn }}>
+    <AuthContext.Provider value={{
+      user, loading,
+      login, logout, register, updateUser,
+      isSuperAdmin, isAdmin, isEmployee, isClient, isLoggedIn,
+    }}>
       {!loading && children}
     </AuthContext.Provider>
   );

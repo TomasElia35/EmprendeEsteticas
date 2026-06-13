@@ -24,11 +24,19 @@ import ServicesView from './views/admin/ServicesView';
 import ProfessionalsView from './views/admin/ProfessionalsView';
 import ProductsView from './views/admin/ProductsView';
 import ReportsView from './views/admin/ReportsView';
+import BusinessConfigView from './views/admin/BusinessConfigView';
+
+// Employee views
+import EmployeeDashboard from './views/employee/EmployeeDashboard';
+import EmployeeAgendaView from './views/employee/EmployeeAgendaView';
+import SellProductView from './views/employee/SellProductView';
+import DailyBillingView from './views/employee/DailyBillingView';
 
 // SuperAdmin views
 import SuperDashboard from './views/superadmin/SuperDashboard';
 import BusinessesView from './views/superadmin/BusinessesView';
 import UsersView from './views/superadmin/UsersView';
+import SubscriptionsView from './views/superadmin/SubscriptionsView';
 
 // App-level state wrapper (needed so HomeView/SalonProfile can share bookings)
 function AppRoutes() {
@@ -37,7 +45,7 @@ function AppRoutes() {
   const [selectedSalonId, setSelectedSalonId] = useState(null);
 
   const handleAddBooking = (newBooking) => {
-    setBookings(prev => [...prev, newBooking]);
+    setBookings((prev) => [...prev, newBooking]);
     // Persist to localStorage so ClientProfileView can read it
     const stored = JSON.parse(localStorage.getItem('estetica_bookings') || '[]');
     stored.push(newBooking);
@@ -57,7 +65,7 @@ function AppRoutes() {
               <div className="container mx-auto px-4 py-8">
                 {selectedSalonId ? (
                   <SalonProfileView
-                    salon={salons.find(s => s.id === selectedSalonId)}
+                    salon={salons.find((s) => s.id === selectedSalonId)}
                     onBack={() => setSelectedSalonId(null)}
                     onBookingComplete={(b) => { handleAddBooking(b); setSelectedSalonId(null); }}
                   />
@@ -89,11 +97,19 @@ function AppRoutes() {
           <Route path="/admin/personal" element={<ProtectedRoute allowedRoles={['admin']}><ProfessionalsView /></ProtectedRoute>} />
           <Route path="/admin/productos" element={<ProtectedRoute allowedRoles={['admin']}><ProductsView /></ProtectedRoute>} />
           <Route path="/admin/reportes" element={<ProtectedRoute allowedRoles={['admin']}><ReportsView /></ProtectedRoute>} />
+          <Route path="/admin/configuracion" element={<ProtectedRoute allowedRoles={['admin']}><BusinessConfigView /></ProtectedRoute>} />
+
+          {/* ── EMPLOYEE ───────────────────────────────────────── */}
+          <Route path="/empleado" element={<ProtectedRoute allowedRoles={['employee']}><EmployeeDashboard /></ProtectedRoute>} />
+          <Route path="/empleado/agenda" element={<ProtectedRoute allowedRoles={['employee']}><EmployeeAgendaView /></ProtectedRoute>} />
+          <Route path="/empleado/productos" element={<ProtectedRoute allowedRoles={['employee']}><SellProductView /></ProtectedRoute>} />
+          <Route path="/empleado/facturacion" element={<ProtectedRoute allowedRoles={['employee']}><DailyBillingView /></ProtectedRoute>} />
 
           {/* ── SUPERADMIN ─────────────────────────────────────── */}
           <Route path="/superadmin" element={<ProtectedRoute allowedRoles={['superadmin']}><SuperDashboard /></ProtectedRoute>} />
           <Route path="/superadmin/emprendimientos" element={<ProtectedRoute allowedRoles={['superadmin']}><BusinessesView /></ProtectedRoute>} />
           <Route path="/superadmin/usuarios" element={<ProtectedRoute allowedRoles={['superadmin']}><UsersView /></ProtectedRoute>} />
+          <Route path="/superadmin/suscripciones" element={<ProtectedRoute allowedRoles={['superadmin']}><SubscriptionsView /></ProtectedRoute>} />
 
           {/* ── FALLBACK ───────────────────────────────────────── */}
           <Route path="*" element={<Navigate to="/" replace />} />

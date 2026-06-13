@@ -8,6 +8,8 @@ const ROLE_HINTS = [
   { label: 'Admin (Elegance)', email: 'admin@elegance.com', password: 'admin123', color: 'bg-primary-700 text-white' },
   { label: 'Admin (Gentleman)', email: 'admin@gentleman.com', password: 'admin123', color: 'bg-primary-700 text-white' },
   { label: 'Admin (Aura)', email: 'admin@aura.com', password: 'admin123', color: 'bg-primary-700 text-white' },
+  { label: 'Empleado (Elegance)', email: 'pedro@elegance.com', password: 'emp123', color: 'bg-indigo-500 text-white' },
+  { label: 'Empleado (Gentleman)', email: 'camila@gentleman.com', password: 'emp123', color: 'bg-indigo-500 text-white' },
   { label: 'Cliente', email: 'ana@test.com', password: 'cliente123', color: 'bg-primary-500 text-white' },
 ];
 
@@ -25,6 +27,7 @@ const LoginView = () => {
     if (from) return from;
     if (role === 'superadmin') return '/superadmin';
     if (role === 'admin') return '/admin';
+    if (role === 'employee') return '/empleado';
     return '/';
   };
 

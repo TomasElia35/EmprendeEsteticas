@@ -12,27 +12,43 @@ export const initialSalons = [
     phone: "1122334455",
     email: "contacto@elegance.com",
     instagram: "@elegance.studio",
+    whatsapp: "541122334455",
     rating: 4.8,
     reviews: 124,
     photo: "https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&w=800&q=80",
+    gallery: [],
     description: "Salón boutique especializado en estética integral y vanguardia.",
     categories: ["Peluquería", "Estética"],
     openDays: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
     openHours: "09:00 - 20:00",
+    themeColor: "#a37c6d",
     monthlyStats: { bookings: 48, revenue: 920000, newClients: 12 },
+    // Modal de promoción que ve el cliente al entrar al perfil del local
+    promotionModal: {
+      active: true,
+      title: "¡20% OFF en Coloración este mes! 🎨",
+      description: "Reservá tu turno de coloración completa antes del 30/06 y obtené un 20% de descuento. Cupos limitados.",
+      imageUrl: "",
+      cta: "Reservar ahora",
+      expiresAt: "2026-06-30",
+    },
     services: [
-      { id: 101, category: "Peluquería", name: "Corte Clásico", duration: 45, price: 15000 },
-      { id: 102, category: "Peluquería", name: "Coloración Completa", duration: 120, price: 45000 },
-      { id: 103, category: "Estética", name: "Limpieza Facial Profunda", duration: 60, price: 25000 },
-      { id: 110, category: "Peluquería", name: "Blow Dry & Styling", duration: 30, price: 10000 },
-      { id: 111, category: "Estética", name: "Tratamiento Anti-edad", duration: 75, price: 35000 },
+      { id: 101, category: "Peluquería", name: "Corte Clásico", duration: 45, price: 15000, recommendedProductIds: [301, 302] },
+      { id: 102, category: "Peluquería", name: "Coloración Completa", duration: 120, price: 45000, recommendedProductIds: [302] },
+      { id: 103, category: "Estética", name: "Limpieza Facial Profunda", duration: 60, price: 25000, recommendedProductIds: [303] },
+      { id: 110, category: "Peluquería", name: "Blow Dry & Styling", duration: 30, price: 10000, recommendedProductIds: [301] },
+      { id: 111, category: "Estética", name: "Tratamiento Anti-edad", duration: 75, price: 35000, recommendedProductIds: [303] },
     ],
     professionals: [
       {
         id: 201,
         name: "María González",
         role: "Estilista Principal",
-        commission: 40,
+        commission: 40, // % base sobre el total del servicio
+        serviceCommissions: {
+          102: 45, // override: 45% por Coloración Completa
+          111: 42, // override: 42% por Tratamiento Anti-edad
+        },
         specialties: ["Corte", "Color", "Estética"],
         avatar: "https://ui-avatars.com/api/?name=Maria+Gonzalez&background=a37c6d&color=fff",
         schedule: {
@@ -49,6 +65,9 @@ export const initialSalons = [
         name: "Lucas Torres",
         role: "Cosmiatra",
         commission: 35,
+        serviceCommissions: {
+          103: 38, // override: 38% por Limpieza Facial
+        },
         specialties: ["Limpieza Facial", "Tratamientos"],
         avatar: "https://ui-avatars.com/api/?name=Lucas+Torres&background=a37c6d&color=fff",
         schedule: {
@@ -76,19 +95,30 @@ export const initialSalons = [
     phone: "1133445566",
     email: "contacto@gentleman.com",
     instagram: "@gentlemanclub.ba",
+    whatsapp: "541133445566",
     rating: 4.9,
     reviews: 89,
     photo: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=800&q=80",
+    gallery: [],
     description: "Barbería clásica de nivel premium con servicio de spa para caballeros.",
     categories: ["Barbería"],
     openDays: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
     openHours: "10:00 - 21:00",
+    themeColor: "#2c3e50",
     monthlyStats: { bookings: 62, revenue: 744000, newClients: 18 },
+    promotionModal: {
+      active: false,
+      title: "",
+      description: "",
+      imageUrl: "",
+      cta: "Ver más",
+      expiresAt: "",
+    },
     services: [
-      { id: 104, category: "Barbería", name: "Corte de Autor", duration: 45, price: 12000 },
-      { id: 105, category: "Barbería", name: "Arreglo de Barba Tradicional", duration: 30, price: 8000 },
-      { id: 106, category: "Barbería", name: "Ritual Completo (Corte + Barba)", duration: 75, price: 18000 },
-      { id: 112, category: "Barbería", name: "Afeitado a Navaja", duration: 40, price: 10000 },
+      { id: 104, category: "Barbería", name: "Corte de Autor", duration: 45, price: 12000, recommendedProductIds: [304] },
+      { id: 105, category: "Barbería", name: "Arreglo de Barba Tradicional", duration: 30, price: 8000, recommendedProductIds: [305, 306] },
+      { id: 106, category: "Barbería", name: "Ritual Completo (Corte + Barba)", duration: 75, price: 18000, recommendedProductIds: [304, 305] },
+      { id: 112, category: "Barbería", name: "Afeitado a Navaja", duration: 40, price: 10000, recommendedProductIds: [306] },
     ],
     professionals: [
       {
@@ -96,6 +126,9 @@ export const initialSalons = [
         name: "Diego Russo",
         role: "Maestro Barbero",
         commission: 45,
+        serviceCommissions: {
+          106: 48, // override: 48% por Ritual Completo
+        },
         specialties: ["Corte clásico", "Barba", "Afeitado"],
         avatar: "https://ui-avatars.com/api/?name=Diego+Russo&background=2c3e50&color=fff",
         schedule: {
@@ -112,6 +145,7 @@ export const initialSalons = [
         name: "Martín Silva",
         role: "Barbero Senior",
         commission: 38,
+        serviceCommissions: {},
         specialties: ["Fade", "Diseño"],
         avatar: "https://ui-avatars.com/api/?name=Martin+Silva&background=2c3e50&color=fff",
         schedule: {
@@ -140,20 +174,31 @@ export const initialSalons = [
     phone: "1144556677",
     email: "contacto@auraspa.com",
     instagram: "@aura.spa.ba",
+    whatsapp: "541144556677",
     rating: 4.7,
     reviews: 210,
     photo: "https://images.unsplash.com/photo-1521590832167-7bfc17484d20?auto=format&fit=crop&w=800&q=80",
+    gallery: [],
     description: "Un oasis de tranquilidad en medio de la ciudad para renovar tu energía.",
     categories: ["Spa", "Uñas"],
     openDays: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
     openHours: "09:00 - 21:00",
+    themeColor: "#7c3aed",
     monthlyStats: { bookings: 75, revenue: 1125000, newClients: 22 },
+    promotionModal: {
+      active: true,
+      title: "¡Combo Spa de Lunes a Miércoles! 🌿",
+      description: "Reservá masaje + pedicuría y llevate un 15% de descuento. Solo válido de lunes a miércoles.",
+      imageUrl: "",
+      cta: "Reservar combo",
+      expiresAt: "2026-07-15",
+    },
     services: [
-      { id: 107, category: "Spa", name: "Masaje Descontracturante", duration: 60, price: 22000 },
-      { id: 108, category: "Uñas", name: "Manicuría Semipermanente", duration: 60, price: 15000 },
-      { id: 109, category: "Uñas", name: "Esculpidas Acrílico", duration: 120, price: 30000 },
-      { id: 113, category: "Spa", name: "Piedras Calientes", duration: 90, price: 35000 },
-      { id: 114, category: "Uñas", name: "Pedicuría Spa", duration: 75, price: 18000 },
+      { id: 107, category: "Spa", name: "Masaje Descontracturante", duration: 60, price: 22000, recommendedProductIds: [308] },
+      { id: 108, category: "Uñas", name: "Manicuría Semipermanente", duration: 60, price: 15000, recommendedProductIds: [307, 309] },
+      { id: 109, category: "Uñas", name: "Esculpidas Acrílico", duration: 120, price: 30000, recommendedProductIds: [309] },
+      { id: 113, category: "Spa", name: "Piedras Calientes", duration: 90, price: 35000, recommendedProductIds: [308] },
+      { id: 114, category: "Uñas", name: "Pedicuría Spa", duration: 75, price: 18000, recommendedProductIds: [307] },
     ],
     professionals: [
       {
@@ -161,6 +206,9 @@ export const initialSalons = [
         name: "Sofía Castro",
         role: "Nail Artist",
         commission: 40,
+        serviceCommissions: {
+          109: 43, // override: 43% por Esculpidas Acrílico
+        },
         specialties: ["Semipermanente", "Acrílico", "Nail Art"],
         avatar: "https://ui-avatars.com/api/?name=Sofia+Castro&background=a37c6d&color=fff",
         schedule: {
@@ -178,6 +226,9 @@ export const initialSalons = [
         name: "Laura Gómez",
         role: "Terapeuta Floral",
         commission: 42,
+        serviceCommissions: {
+          113: 45, // override: 45% por Piedras Calientes
+        },
         specialties: ["Masajes", "Spa", "Aromaterapia"],
         avatar: "https://ui-avatars.com/api/?name=Laura+Gomez&background=a37c6d&color=fff",
         schedule: {
@@ -200,6 +251,8 @@ export const initialSalons = [
 ];
 
 // Bookings iniciales de demostración
+// status: 'confirmed' | 'pending' | 'in_progress' | 'completed' | 'cancelled'
+// payment: null cuando no se cobró aún
 export const initialBookings = [
   {
     id: "b-001",
@@ -213,7 +266,9 @@ export const initialBookings = [
     clientEmail: "ana@test.com",
     clientId: "u-client-001",
     status: "confirmed",
+    discount: null,
     notes: "",
+    payment: null,
   },
   {
     id: "b-002",
@@ -226,8 +281,14 @@ export const initialBookings = [
     clientPhone: "1166778899",
     clientEmail: "juan@test.com",
     clientId: "u-client-002",
-    status: "confirmed",
+    status: "completed",
+    discount: { type: 'percent', value: 10 },
     notes: "",
+    payment: {
+      amount: 16200, // 18000 - 10%
+      method: "efectivo",
+      paidAt: new Date().toISOString(),
+    },
   },
   {
     id: "b-003",
@@ -241,7 +302,9 @@ export const initialBookings = [
     clientEmail: "vale@test.com",
     clientId: null,
     status: "pending",
+    discount: null,
     notes: "Primera vez en el salón",
+    payment: null,
   },
   {
     id: "b-004",
@@ -255,6 +318,42 @@ export const initialBookings = [
     clientEmail: "lucia@test.com",
     clientId: null,
     status: "confirmed",
+    discount: null,
     notes: "",
+    payment: null,
+  },
+];
+
+// Suscripciones mock para SuperAdmin
+export const initialSubscriptions = [
+  {
+    id: 'sub-001',
+    businessId: 1,
+    businessName: "L'Elegance Studio",
+    plan: 'Pro',
+    status: 'active',
+    startDate: '2026-01-01',
+    nextBillingDate: '2026-07-01',
+    monthlyPrice: 29900,
+  },
+  {
+    id: 'sub-002',
+    businessId: 2,
+    businessName: "Gentleman's Club Barber",
+    plan: 'Pro',
+    status: 'active',
+    startDate: '2026-02-15',
+    nextBillingDate: '2026-07-15',
+    monthlyPrice: 29900,
+  },
+  {
+    id: 'sub-003',
+    businessId: 3,
+    businessName: "Aura Belleza & Spa",
+    plan: 'Enterprise',
+    status: 'active',
+    startDate: '2025-11-01',
+    nextBillingDate: '2026-07-01',
+    monthlyPrice: 59900,
   },
 ];
