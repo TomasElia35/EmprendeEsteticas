@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan de Unificación — EstéticaHub × peluquerIA</title>
+<style>
+  :root{
+    --cream:#FDFAF7; --cream2:#F5EAE0; --border:#EAD5C4; --muted:#BE9B78;
+    --tan:#A87E5C; --brown:#705138; --brown-d:#543C29; --ink:#1C1007;
+    --gold:#D4AF37; --terra:#B8714F; --green:#3F7A5E; --red:#B4524A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--cream);color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.55;padding:0 0 80px;}
+  .serif{font-family:Georgia,"Playfair Display",serif;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px;}
+  header{background:linear-gradient(135deg,#38271A,#705138);color:#fff;padding:56px 20px 48px;text-align:center;}
+  header h1{font-family:Georgia,serif;font-size:2.2rem;font-weight:700;letter-spacing:-.5px;margin-bottom:10px;}
+  header p{color:#EAD5C4;max-width:640px;margin:0 auto;font-size:1.02rem;}
+  .gold-chip{display:inline-block;background:rgba(212,175,55,.18);border:1px solid rgba(212,175,55,.5);color:#F5D67E;padding:5px 14px;border-radius:999px;font-size:.78rem;font-weight:600;letter-spacing:.5px;margin-bottom:22px;text-transform:uppercase;}
+  section{margin-top:44px;}
+  h2{font-family:Georgia,serif;font-size:1.5rem;color:var(--ink);margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+  h2 .num{background:var(--brown);color:#fff;width:32px;height:32px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:.95rem;font-family:Inter,sans-serif;flex-shrink:0;}
+  .sub{color:var(--tan);font-size:.95rem;margin-bottom:20px;margin-left:42px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr;}header h1{font-size:1.7rem;}}
+  .card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:0 1px 3px rgba(28,16,7,.05);}
+  .card h3{font-size:1.05rem;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .tag{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 9px;border-radius:999px;}
+  .tag-them{background:#FBF1D5;color:#8A6D17;border:1px solid #E8D08A;}
+  .tag-us{background:#E9F0EB;color:var(--green);border:1px solid #BFD8C8;}
+  ul{list-style:none;}
+  li{padding:6px 0 6px 22px;position:relative;font-size:.92rem;color:var(--brown-d);}
+  li::before{content:"";position:absolute;left:2px;top:13px;width:7px;height:7px;border-radius:50%;background:var(--terra);}
+  li.keep::before{background:var(--green);}
+  li.add::before{background:var(--gold);}
+  .phase{background:#fff;border:1px solid var(--border);border-radius:16px;padding:0;margin-bottom:14px;overflow:hidden;box-shadow:0 1px 3px rgba(28,16,7,.05);}
+  .phase-head{display:flex;align-items:center;gap:14px;padding:18px 22px;background:var(--cream2);}
+  .phase-head .pn{background:var(--brown);color:#fff;font-family:Georgia,serif;font-weight:700;width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.05rem;}
+  .phase-head .pt{flex:1;}
+  .phase-head .pt b{display:block;font-size:1.05rem;}
+  .phase-head .pt span{font-size:.82rem;color:var(--tan);}
+  .effort{font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;}
+  .e-low{background:#E9F0EB;color:var(--green);}
+  .e-mid{background:#FBF1D5;color:#8A6D17;}
+  .e-high{background:#F7E4DF;color:var(--red);}
+  .phase-body{padding:16px 22px 20px;}
+  .phase-body li::before{background:var(--brown);}
+  .decision{background:linear-gradient(135deg,#FFFDF5,#FBF1D5);border:1px solid #E8D08A;border-radius:16px;padding:20px 22px;margin-bottom:12px;}
+  .decision b{color:var(--brown-d);}
+  .decision .q{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8A6D17;margin-bottom:6px;}
+  .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px;justify-content:center;}
+  .pill{background:#fff;border:1px solid var(--border);border-radius:999px;padding:7px 16px;font-size:.85rem;color:var(--brown-d);font-weight:500;}
+  .pill b{color:var(--ink);}
+  .swatch{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:middle;margin-right:4px;border:1px solid rgba(0,0,0,.1);}
+  .note{font-size:.86rem;color:var(--tan);font-style:italic;margin-top:8px;margin-left:42px;}
+  footer{text-align:center;margin-top:50px;color:var(--tan);font-size:.85rem;}
+</style>
+</head>
+<body>
+<header>
+  <div class="gold-chip">Plan de Unificación · v1</div>
+  <h1>EstéticaHub × peluquerIA</h1>
+  <p>Fusionar la riqueza funcional de tu plataforma con la estética premium y el dinamismo visual de peluquerIA — una sola identidad, dashboards coherentes y experiencia responsive.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- COMPARATIVA -->
+  <section>
+    <h2><span class="num">01</span> Punto de partida</h2>
+    <p class="sub">Qué hace fuerte a cada proyecto hoy.</p>
+    <div class="grid2">
+      <div class="card">
+        <h3><span class="tag tag-them">peluquerIA</span> Estética &amp; dinamismo</h3>
+        <ul>
+          <li>Gráficos reales (Recharts: torta + barras) en dashboard admin</li>
+          <li>Titulares serif <b>Playfair Display</b> → sensación premium</li>
+          <li>Acento dorado <span class="swatch" style="background:#D4AF37"></span>#D4AF37</li>
+          <li>Glassmorphism, animación de escaneo y gradientes</li>
+          <li>Feature estrella: <b>"PeluquerIA Match"</b> (foto → corte sugerido)</li>
+          <li>Hover scale, stepper animado, spinners de carga</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><span class="tag tag-us">EstéticaHub</span> Profundidad funcional</h3>
+        <ul>
+          <li class="keep">4 roles (incluye <b>superadmin</b> multi-local)</li>
+          <li class="keep">Suscripciones, planes y MRR/ARR</li>
+          <li class="keep">Señas, flujos de cancelación con/sin reembolso</li>
+          <li class="keep">Facturación por día <b>y por rango</b> + comisiones</li>
+          <li class="keep">Asignación de servicios por empleado</li>
+          <li class="keep">Sidebar responsive con drawer mobile + FAB</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">Diagnóstico: somos más completos en negocio, ellos más pulidos en presentación. Las paletas ya son de la misma familia cálida, así que converger es natural.</p>
+  </section>
+
+  <!-- QUE ADOPTAMOS -->
+  <section>
+    <h2><span class="num">02</span> Qué adoptamos · qué conservamos</h2>
+    <p class="sub">La fusión, en concreto.</p>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="color:#8A6D17">▲ Traer de peluquerIA</h3>
+        <ul>
+          <li class="add">Acento dorado como color de marca (CTA, highlights)</li>
+          <li class="add">Titulares serif premium en headers y dashboards</li>
+          <li class="add">Recharts en los 3 dashboards (torta, barras, línea)</li>
+          <li class="add">Microinteracciones: hover-scale, KPIs con contador animado</li>
+          <li class="add">"Match" de servicio por foto (opcional, ver decisiones)</li>
+          <li class="add">Glassmorphism sutil en headers/hero</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="color:#3F7A5E">● Conservar de EstéticaHub</h3>
+        <ul>
+          <li class="keep">Toda la lógica de negocio (sin tocar)</li>
+          <li class="keep">Los 4 roles y sus rutas</li>
+          <li class="keep">Sistema de íconos SVG propio (sumamos lucide si hace falta)</li>
+          <li class="keep">Componentes base ya rediseñados (.btn, .card, .badge)</li>
+          <li class="keep">Drawer mobile y layouts responsive existentes</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARDS -->
+  <section>
+    <h2><span class="num">03</span> Dashboards unificados</h2>
+    <p class="sub">Hoy los 3 están maquetados distinto. Un solo patrón para todos.</p>
+    <div class="card">
+      <ul>
+        <li><b>Patrón común:</b> fila de KPIs animados → 2 gráficos → tabla/lista de actividad reciente.</li>
+        <li><b>Admin:</b> ingresos vs comisiones (barras por profesional) + servicios vs productos (torta) + agenda del día.</li>
+        <li><b>Empleado:</b> facturación de la semana (línea) + mis turnos próximos + accesos rápidos.</li>
+        <li><b>Superadmin:</b> MRR por mes (línea) + distribución de planes (torta) + ranking de locales (barras).</li>
+        <li><b>Cliente:</b> próximos turnos destacados + historial + recomendaciones.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- FASES -->
+  <section>
+    <h2><span class="num">04</span> Plan por fases</h2>
+    <p class="sub">Incremental: cada fase deja la app funcionando y verificable.</p>
+
+    <div class="phase">
+      <div class="phase-head"><span class="pn">1</span><div class="pt"><b>Identidad visual unificada</b><span>Tokens de diseño, tipografía serif, acento dorado, glassmorphism</span></div><span class="effort e-low">Bajo</span></div>
+      <div class="phase-body"><ul>
+        <li>Sumar dorado al tema y fuente serif para titulares (h1/h2 dashboards)</li>
+        <li>Ajustar .card / hero con glass sutil; refinar sombras y radios</li>
+        <li>Sin tocar lógica — solo capa de estilo</li>
+      </ul></div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><span class="pn">2</span><div class="pt"><b>Motor de gráficos</b><span>Integrar Recharts + componentes Chart reutilizables</span></div><span class="effort e-mid">Medio</span></div>
+      <div class="phase-body"><ul>
+        <li>Instalar recharts; crear &lt;BarCard/&gt;, &lt;PieCard/&gt;, &lt;LineCard/&gt; con la paleta cálida</li>
+        <li>Helpers de datos derivados (ingresos por profesional, planes, series temporales)</li>
+      </ul></div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><span class="pn">3</span><div class="pt"><b>Rediseño de los 4 dashboards</b><span>Aplicar patrón común + gráficos + KPIs animados</span></div><span class="effort e-high">Alto</span></div>
+      <div class="phase-body"><ul>
+        <li>Admin, Empleado, Superadmin y perfil Cliente al mismo patrón</li>
+        <li>Contadores animados, hover-scale en cards, estados vacíos elegantes</li>
+      </ul></div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><span class="pn">4</span><div class="pt"><b>Dinamismo &amp; microinteracciones</b><span>Transiciones de estado, skeletons, toasts pulidos</span></div><span class="effort e-mid">Medio</span></div>
+      <div class="phase-body"><ul>
+        <li>Loading skeletons, transiciones al cambiar estado de turnos</li>
+        <li>Stepper animado en el booking; feedback visual en acciones</li>
+      </ul></div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-head"><span class="pn">5</span><div class="pt"><b>Feature "Match" + pulido final</b><span>Recomendador por foto (opcional) y QA responsive</span></div><span class="effort e-high">Alto</span></div>
+      <div class="phase-body"><ul>
+        <li>Si se aprueba: flujo de foto → análisis simulado → servicio sugerido</li>
+        <li>Auditoría responsive completa (mobile/tablet/desktop) + accesibilidad básica</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <!-- DECISIONES -->
+  <section>
+    <h2><span class="num">05</span> Decisiones que necesito de vos</h2>
+    <p class="sub">Te las paso también como preguntas para que respondas rápido.</p>
+
+    <div class="decision">
+      <div class="q">Decisión A · Identidad</div>
+      <b>¿Adoptamos titulares serif (Playfair) + acento dorado?</b> Es el cambio que más "premium" lo hace, pero redefine la marca actual (cobre/terracota).
+    </div>
+    <div class="decision">
+      <div class="q">Decisión B · Gráficos</div>
+      <b>¿Sumamos Recharts a los dashboards?</b> Es lo que más eleva el dinamismo. Agrega una dependencia liviana y estándar.
+    </div>
+    <div class="decision">
+      <div class="q">Decisión C · Feature Match</div>
+      <b>¿Incluimos el recomendador por foto?</b> Es el diferenciador de peluquerIA. Sería simulado (sin IA real) salvo que conectemos un backend después.
+    </div>
+    <div class="decision">
+      <div class="q">Decisión D · Orden de arranque</div>
+      <b>¿Por dónde empezamos?</b> Por la identidad visual (Fase 1) o directo a unificar dashboards con gráficos (Fases 2-3).
+    </div>
+  </section>
+
+  <div class="pill-row">
+    <span class="pill">Stack sugerido: <b>+ Recharts</b></span>
+    <span class="pill">Tipografía: <b>Playfair + Inter</b></span>
+    <span class="pill"><span class="swatch" style="background:#D4AF37"></span><b>Dorado</b></span>
+    <span class="pill"><span class="swatch" style="background:#B8714F"></span><b>Terracota</b></span>
+    <span class="pill"><span class="swatch" style="background:#705138"></span><b>Marrón</b></span>
+    <span class="pill"><span class="swatch" style="background:#F5EAE0"></span><b>Crema</b></span>
+  </div>
+
+  <footer>Plan preliminar · sujeto a tus respuestas en la sección 05</footer>
+</div>
+</body>
+</html>

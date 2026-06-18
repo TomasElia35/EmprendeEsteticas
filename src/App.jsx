@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { initialSalons, initialBookings } from './data/mockData';
 
 // Layout
@@ -40,9 +40,14 @@ import SubscriptionsView from './views/superadmin/SubscriptionsView';
 
 // App-level state wrapper (needed so HomeView/SalonProfile can share bookings)
 function AppRoutes() {
+  const { user } = useAuth();
   const [salons] = useState(initialSalons);
   const [bookings, setBookings] = useState(initialBookings);
   const [selectedSalonId, setSelectedSalonId] = useState(null);
+
+  // El footer solo se muestra en la parte del cliente (visitantes públicos y clientes),
+  // no en los paneles de administración, empleado o superadmin.
+  const showFooter = !user || user.role === 'client';
 
   const handleAddBooking = (newBooking) => {
     setBookings((prev) => [...prev, newBooking]);
@@ -116,11 +121,13 @@ function AppRoutes() {
         </Routes>
       </main>
 
-      <footer className="bg-white border-t border-primary-200 py-6 mt-auto">
-        <div className="container mx-auto px-4 text-center text-primary-600 text-sm">
-          &copy; {new Date().getFullYear()} EstéticaHub &mdash; Elegancia y estilo en un solo lugar.
-        </div>
-      </footer>
+      {showFooter && (
+        <footer className="bg-white border-t border-primary-200 py-6 mt-auto">
+          <div className="container mx-auto px-4 text-center text-primary-600 text-sm">
+            &copy; {new Date().getFullYear()} EstéticaHub &mdash; Elegancia y estilo en un solo lugar.
+          </div>
+        </footer>
+      )}
 
       <ToastContainer />
     </div>

@@ -70,10 +70,10 @@ const ProductsView = () => {
         {/* Page header */}
         <div className="page-header">
           <div>
-            <h1 className="text-2xl font-bold text-secondary tracking-tight">Productos</h1>
+            <h1 className="page-title">Productos</h1>
             <p className="text-sm text-primary-500 mt-0.5">Gestion de inventario y precios</p>
           </div>
-          <button id="admin-create-product-btn" onClick={openCreate} className="btn-primary flex items-center gap-2">
+          <button id="admin-create-product-btn" onClick={openCreate} className="btn-gold flex items-center gap-2">
             <Icon name="plus" className="w-4 h-4" />
             Nuevo producto
           </button>
@@ -106,7 +106,7 @@ const ProductsView = () => {
               </div>
               <span className="stat-label">Valor del inventario</span>
             </div>
-            <p className="stat-value">${totalValue.toLocaleString()}</p>
+            <p className="stat-value text-gold">${totalValue.toLocaleString()}</p>
           </div>
         </div>
 
@@ -173,7 +173,7 @@ const ProductsView = () => {
                     </div>
                   </td>
                   <td className="table-td text-primary-500 hidden sm:table-cell">${prod.costPrice.toLocaleString()}</td>
-                  <td className="table-td font-bold text-primary-700">${prod.salePrice.toLocaleString()}</td>
+                  <td className="table-td font-bold text-gold">${prod.salePrice.toLocaleString()}</td>
                   <td className="table-td text-right">
                     <div className="flex gap-2 justify-end">
                       <button onClick={() => openEdit(prod)} className="btn-secondary text-xs px-3 py-1.5 flex items-center gap-1">
@@ -264,7 +264,7 @@ const ProductsView = () => {
             </div>
             <div className="flex justify-end gap-3 pt-2">
               <button onClick={() => setModalOpen(false)} className="btn-secondary">Cancelar</button>
-              <button id="prod-save-btn" onClick={handleSave} className="btn-primary">Guardar</button>
+              <button id="prod-save-btn" onClick={handleSave} className="btn-gold">Guardar</button>
             </div>
           </div>
         </Modal>

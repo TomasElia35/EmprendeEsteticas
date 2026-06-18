@@ -28,8 +28,11 @@ const SuperAdminLayout = ({ children }) => {
       `}>
         <div className="p-4 border-b border-white/10">
           <p className="section-label text-white/50 mb-1">Modo</p>
-          <p className="font-bold text-white text-sm">Super Administrador</p>
-          <p className="text-xs text-white/60 mt-0.5 truncate">{user?.email}</p>
+          <div className="flex items-center gap-2">
+            <Icon name="scissors" className="w-4 h-4 text-gold-500 flex-shrink-0" />
+            <p className="font-serif font-bold text-white text-base">Super Administrador</p>
+          </div>
+          <p className="text-xs text-white/60 mt-1 truncate">{user?.email}</p>
         </div>
 
         <nav className="p-3 space-y-1">
@@ -45,13 +48,13 @@ const SuperAdminLayout = ({ children }) => {
                 key={link.to}
                 to={link.to}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors border-l-2 ${
                   isActive
-                    ? 'bg-white/20 text-white'
-                    : 'text-white/70 hover:bg-white/10 hover:text-white'
+                    ? 'bg-white/20 text-white border-gold-500'
+                    : 'border-transparent text-white/70 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <Icon name={link.icon} className="w-4 h-4 flex-shrink-0" />
+                <Icon name={link.icon} className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-gold-500' : ''}`} />
                 {link.label}
               </Link>
             );

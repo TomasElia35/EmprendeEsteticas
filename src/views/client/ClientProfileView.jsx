@@ -125,16 +125,16 @@ const ClientProfileView = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Profile header */}
-      <div className="bg-white rounded-2xl border border-primary-100 shadow-card p-6 flex flex-wrap items-center gap-4">
+      <div className="glass rounded-2xl border border-primary-100 shadow-card p-6 flex flex-wrap items-center gap-4">
         <img
           src={user.avatar}
           alt={user.name}
-          className="w-16 h-16 rounded-full ring-4 ring-primary-100 shadow-md flex-shrink-0"
+          className="w-20 h-20 rounded-full ring-4 ring-gold-100 shadow-md flex-shrink-0"
         />
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-bold text-secondary tracking-tight">{user.name}</h1>
-          <div className="flex flex-wrap items-center gap-2 mt-1">
-            <span className="badge badge-neutral">Cliente</span>
+          <h1 className="page-title">{user.name}</h1>
+          <div className="flex flex-wrap items-center gap-2 mt-2">
+            <span className="badge-gold">Cliente</span>
             <span className="text-primary-500 text-sm flex items-center gap-1">
               <Icon name="mail" className="w-3.5 h-3.5" />
               {user.email}
@@ -159,8 +159,9 @@ const ClientProfileView = () => {
 
       {/* Edit profile form */}
       {showEditProfile && (
-        <div className="bg-white rounded-2xl border border-primary-100 shadow-card p-6 animate-fade-in">
-          <h2 className="font-bold text-secondary mb-4">Editar mis datos</h2>
+        <div className="card p-6 animate-fade-in">
+          <p className="section-label mb-1">Mi cuenta</p>
+          <h2 className="font-serif text-xl font-bold text-secondary mb-4">Editar mis datos</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="label">Nombre completo *</label>
@@ -220,7 +221,8 @@ const ClientProfileView = () => {
             <button onClick={() => setShowEditProfile(false)} className="btn-secondary text-sm">
               Cancelar
             </button>
-            <button id="save-profile-btn" onClick={handleSaveProfile} className="btn-primary text-sm">
+            <button id="save-profile-btn" onClick={handleSaveProfile} className="btn-gold text-sm">
+              <Icon name="check" className="w-4 h-4" />
               Guardar cambios
             </button>
           </div>
@@ -237,9 +239,9 @@ const ClientProfileView = () => {
             key={tab.id}
             id={`client-tab-${tab.id}`}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
               activeTab === tab.id
-                ? 'bg-white shadow text-secondary'
+                ? 'bg-white shadow text-secondary ring-1 ring-gold-400/40'
                 : 'text-primary-600 hover:text-primary-900'
             }`}
           >
@@ -270,18 +272,18 @@ const ClientProfileView = () => {
             return (
               <div
                 key={booking.id}
-                className="bg-white rounded-2xl border border-primary-100 shadow-card p-5 flex gap-4 items-start hover:bg-primary-50/60 transition-colors"
+                className="card lift p-5 flex gap-4 items-start"
               >
                 {salon && (
                   <img
                     src={salon.photo}
                     alt={salon.name}
-                    className="w-20 h-20 rounded-xl object-cover flex-shrink-0 hidden sm:block"
+                    className="w-20 h-20 rounded-xl object-cover flex-shrink-0 hidden sm:block ring-1 ring-primary-100"
                   />
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-bold text-secondary truncate">{salon?.name || 'Salón'}</h3>
+                    <h3 className="font-serif font-bold text-secondary truncate">{salon?.name || 'Salón'}</h3>
                     <span className={`badge ${statusInfo.badge} flex-shrink-0`}>
                       {statusInfo.label}
                     </span>
@@ -299,7 +301,7 @@ const ClientProfileView = () => {
                       </span>
                     )}
                     {service && (
-                      <span className="flex items-center gap-1">
+                      <span className="flex items-center gap-1 text-gold font-semibold">
                         <Icon name="dollar" className="w-3.5 h-3.5" />
                         ${service.price.toLocaleString('es-AR')}
                       </span>

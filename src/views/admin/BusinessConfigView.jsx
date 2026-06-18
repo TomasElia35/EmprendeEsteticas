@@ -91,7 +91,7 @@ const BusinessConfigView = () => {
     <AdminLayout>
       <div className="space-y-6 animate-fade-in">
         <div>
-          <h1 className="text-2xl font-bold text-secondary tracking-tight">Configuración del Local</h1>
+          <h1 className="page-title">Configuración del Local</h1>
           <p className="text-primary-500 text-sm mt-1">Personalizá cómo te ven tus clientes</p>
         </div>
 
@@ -200,7 +200,7 @@ const BusinessConfigView = () => {
                   />
                 </div>
               </div>
-              <button id="save-info-btn" onClick={handleSaveInfo} className="btn-primary mt-2">
+              <button id="save-info-btn" onClick={handleSaveInfo} className="btn-gold mt-2">
                 Guardar cambios
               </button>
             </div>
@@ -263,7 +263,7 @@ const BusinessConfigView = () => {
               <button
                 id="save-appearance-btn"
                 onClick={() => toast.success('Apariencia actualizada.')}
-                className="btn-primary"
+                className="btn-gold"
               >
                 Guardar cambios
               </button>
@@ -385,7 +385,7 @@ const BusinessConfigView = () => {
               </div>
             )}
 
-            <button id="save-promo-btn" onClick={handleSavePromo} className="btn-primary">
+            <button id="save-promo-btn" onClick={handleSavePromo} className="btn-gold">
               {promo.active ? 'Activar y guardar' : 'Desactivar modal'}
             </button>
           </div>
@@ -500,7 +500,7 @@ const BusinessConfigView = () => {
                 </ul>
               </div>
 
-              <button id="save-policy-btn" onClick={handleSaveDepositConfig} className="btn-primary">
+              <button id="save-policy-btn" onClick={handleSaveDepositConfig} className="btn-gold">
                 Guardar política de turnos
               </button>
             </div>

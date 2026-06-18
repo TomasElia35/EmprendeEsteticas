@@ -95,8 +95,8 @@ const ProfessionalsView = () => {
     <AdminLayout>
       <div className="space-y-6 animate-fade-in">
         <div className="page-header">
-          <h1 className="text-2xl font-bold text-secondary tracking-tight">Personal</h1>
-          <button id="admin-create-prof-btn" onClick={openCreate} className="btn-primary flex items-center gap-2">
+          <h1 className="page-title">Personal</h1>
+          <button id="admin-create-prof-btn" onClick={openCreate} className="btn-gold flex items-center gap-2">
             <Icon name="plus" className="w-4 h-4" />
             Agregar profesional
           </button>
@@ -106,7 +106,7 @@ const ProfessionalsView = () => {
           {salon?.professionals.map(prof => {
             const assignedSvcs = getAssignedServiceNames(prof);
             return (
-              <div key={prof.id} className="card p-5 flex gap-4">
+              <div key={prof.id} className="card lift p-5 flex gap-4">
                 <img
                   src={prof.avatar}
                   alt={prof.name}
@@ -237,7 +237,7 @@ const ProfessionalsView = () => {
 
             <div className="flex justify-end gap-3 pt-2">
               <button onClick={() => setModalOpen(false)} className="btn-secondary">Cancelar</button>
-              <button id="prof-save-btn" onClick={handleSave} className="btn-primary">Guardar</button>
+              <button id="prof-save-btn" onClick={handleSave} className="btn-gold">Guardar</button>
             </div>
           </div>
         </Modal>

@@ -25,7 +25,7 @@ const DashboardView = ({ bookings, salons }) => {
     <div className="animate-fade-in max-w-6xl mx-auto">
       <div className="page-header mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-secondary tracking-tight">Panel de Control</h1>
+          <h1 className="page-title text-3xl">Panel de Control</h1>
           <p className="text-primary-600 mt-1">Gestión de reservas diarias para tu negocio.</p>
         </div>
 
@@ -43,10 +43,10 @@ const DashboardView = ({ bookings, salons }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-8">
         <div className="stat-card">
           <div className="flex items-center gap-2 mb-3">
-            <Icon name="calendar" className="w-4 h-4 text-primary-500" />
+            <Icon name="calendar" className="w-4 h-4 text-gold-600" />
             <span className="stat-label">Turnos de Hoy</span>
           </div>
-          <span className="stat-value">{salonBookings.length}</span>
+          <span className="stat-value text-gold">{salonBookings.length}</span>
         </div>
 
         <div className="stat-card">

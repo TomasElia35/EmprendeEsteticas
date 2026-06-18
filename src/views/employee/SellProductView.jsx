@@ -62,7 +62,7 @@ const SellProductView = () => {
       <div className="space-y-6 animate-fade-in">
         <div className="page-header">
           <div>
-            <h1 className="text-2xl font-bold text-secondary tracking-tight">Vender Producto</h1>
+            <h1 className="page-title">Vender Producto</h1>
             <p className="text-primary-500 text-sm mt-1">Stock de {salon?.name}</p>
           </div>
         </div>
@@ -72,7 +72,7 @@ const SellProductView = () => {
           {products.map((p) => (
             <div
               key={p.id}
-              className="card p-4 hover:shadow-md transition-shadow"
+              className="card lift p-4"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1 min-w-0">
@@ -92,7 +92,7 @@ const SellProductView = () => {
                     <Icon name="tag" className="w-3.5 h-3.5" />
                     Precio venta
                   </span>
-                  <span className="font-bold text-accent text-base">${p.salePrice.toLocaleString('es-AR')}</span>
+                  <span className="font-bold text-gold text-base">${p.salePrice.toLocaleString('es-AR')}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-primary-400 flex items-center gap-1">
@@ -110,7 +110,7 @@ const SellProductView = () => {
                 className={`w-full py-2 rounded-xl text-sm font-semibold transition-colors ${
                   p.stock === 0
                     ? 'bg-primary-100 text-primary-400 cursor-not-allowed'
-                    : 'btn-primary'
+                    : 'btn-gold'
                 }`}
               >
                 {p.stock === 0 ? 'Sin stock' : 'Vender'}
@@ -185,7 +185,7 @@ const SellProductView = () => {
               </div>
               <div className="bg-primary-50 rounded-xl p-3 flex justify-between items-center border border-primary-100">
                 <span className="text-sm text-primary-600 font-medium">Total</span>
-                <span className="font-bold text-secondary text-lg">
+                <span className="font-bold text-gold text-lg">
                   ${(sellModal.salePrice * (parseInt(saleForm.quantity) || 1)).toLocaleString('es-AR')}
                 </span>
               </div>
@@ -193,7 +193,7 @@ const SellProductView = () => {
 
             <div className="flex gap-3 mt-5">
               <button onClick={() => setSellModal(null)} className="flex-1 btn-secondary">Cancelar</button>
-              <button id="confirm-sale-btn" onClick={handleSell} className="flex-1 btn-primary">
+              <button id="confirm-sale-btn" onClick={handleSell} className="flex-1 btn-gold">
                 Confirmar venta
               </button>
             </div>

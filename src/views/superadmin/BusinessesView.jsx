@@ -83,10 +83,10 @@ const BusinessesView = () => {
         {/* Page header */}
         <div className="page-header">
           <div>
-            <h1 className="text-2xl font-bold text-secondary tracking-tight">Emprendimientos</h1>
+            <h1 className="page-title">Emprendimientos</h1>
             <p className="text-sm text-primary-500 mt-0.5">{salons.length} negocios registrados en la plataforma</p>
           </div>
-          <button id="super-create-business-btn" onClick={openCreate} className="btn-primary flex items-center gap-2">
+          <button id="super-create-business-btn" onClick={openCreate} className="btn-gold flex items-center gap-2">
             <Icon name="plus" className="w-4 h-4" />
             Nuevo emprendimiento
           </button>
@@ -97,7 +97,7 @@ const BusinessesView = () => {
           {salons.map(salon => {
             const assignedAdmin = admins.find(a => a.id === salon.adminId);
             return (
-              <div key={salon.id} className="card overflow-hidden">
+              <div key={salon.id} className="card overflow-hidden lift">
                 <div className="card-body">
                   <div className="flex gap-5">
                     <img
@@ -258,7 +258,7 @@ const BusinessesView = () => {
 
             <div className="flex justify-end gap-3 pt-2 border-t border-primary-100">
               <button onClick={() => setModalOpen(false)} className="btn-secondary">Cancelar</button>
-              <button id="biz-save-btn" onClick={handleSave} className="btn-primary">Guardar</button>
+              <button id="biz-save-btn" onClick={handleSave} className="btn-gold">Guardar</button>
             </div>
           </div>
         </Modal>

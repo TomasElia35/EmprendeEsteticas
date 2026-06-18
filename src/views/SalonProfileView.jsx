@@ -8,6 +8,10 @@ import Icon from '../components/ui/Icon';
 const SalonProfileView = ({ salon, onBack, onBookingComplete }) => {
   const { isLoggedIn, isClient } = useAuth();
   const navigate = useNavigate();
+
+  // Solo los clientes (o visitantes que luego se registran) pueden sacar turnos.
+  // Admin, empleado y superadmin no reservan desde el flujo del cliente.
+  const isStaff = isLoggedIn() && !isClient();
   const [showWizard, setShowWizard] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [showPromo, setShowPromo] = useState(false);
@@ -33,6 +37,8 @@ const SalonProfileView = ({ salon, onBack, onBookingComplete }) => {
       navigate('/login', { state: { from: { pathname: '/' }, openBooking: salon.id } });
       return;
     }
+    // El staff no puede reservar desde el flujo del cliente
+    if (isStaff) return;
     setShowWizard(true);
   };
 
@@ -86,10 +92,10 @@ const SalonProfileView = ({ salon, onBack, onBookingComplete }) => {
       <div className="bg-white border border-primary-100 rounded-2xl shadow-card p-6 mt-4 mb-8">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h2 className="text-2xl font-bold text-secondary tracking-tight mb-1">{salon.name}</h2>
+            <h2 className="page-title text-3xl mb-1">{salon.name}</h2>
             <div className="flex flex-wrap items-center gap-4 text-sm mt-2">
-              <span className="flex items-center gap-1 text-accent font-semibold">
-                <Icon name="star" className="w-4 h-4 text-accent" />
+              <span className="flex items-center gap-1 text-gold-600 font-semibold">
+                <Icon name="star" className="w-4 h-4 text-gold-500" />
                 {salon.rating}
                 <span className="text-primary-500 font-normal ml-1">({salon.reviews} reseñas)</span>
               </span>
@@ -115,16 +121,28 @@ const SalonProfileView = ({ salon, onBack, onBookingComplete }) => {
             )}
           </div>
 
-          <div className="flex-shrink-0">
-            <button
-              id="open-booking-wizard-btn"
-              onClick={handleReserveClick}
-              className="btn-primary whitespace-nowrap"
-            >
-              {isLoggedIn() ? 'Reservar Turno' : 'Reservar'}
-            </button>
-          </div>
+          {!isStaff && (
+            <div className="flex-shrink-0">
+              <button
+                id="open-booking-wizard-btn"
+                onClick={handleReserveClick}
+                className="btn-gold whitespace-nowrap"
+              >
+                {isLoggedIn() ? 'Reservar Turno' : 'Reservar'}
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* Staff notice — no pueden reservar como cliente */}
+        {isStaff && (
+          <div className="mt-4 pt-4 border-t border-primary-100 flex items-center gap-2">
+            <Icon name="info" className="w-4 h-4 text-primary-400 flex-shrink-0" />
+            <p className="text-sm text-primary-600">
+              Las reservas son exclusivas para clientes. Tu cuenta de staff no puede sacar turnos desde aqui.
+            </p>
+          </div>
+        )}
 
         {/* Login gate notice */}
         {!isLoggedIn() && (
@@ -144,7 +162,7 @@ const SalonProfileView = ({ salon, onBack, onBookingComplete }) => {
       </div>
 
       {/* Main content */}
-      {showWizard ? (
+      {showWizard && !isStaff ? (
         <BookingWizard
           salon={salon}
           onComplete={handleBookingComplete}
@@ -153,14 +171,16 @@ const SalonProfileView = ({ salon, onBack, onBookingComplete }) => {
       ) : (
         <div className="card">
           <div className="card-header flex items-center justify-between">
-            <h3 className="text-2xl font-bold text-secondary tracking-tight">Nuestros Servicios</h3>
-            <button
-              id="open-booking-wizard-btn"
-              onClick={handleReserveClick}
-              className="btn-primary"
-            >
-              {isLoggedIn() ? 'Reservar Turno' : 'Reservar'}
-            </button>
+            <h3 className="page-title text-2xl">Nuestros Servicios</h3>
+            {!isStaff && (
+              <button
+                id="open-booking-wizard-btn"
+                onClick={handleReserveClick}
+                className="btn-gold"
+              >
+                {isLoggedIn() ? 'Reservar Turno' : 'Reservar'}
+              </button>
+            )}
           </div>
 
           <div className="card-body space-y-8">
@@ -171,11 +191,11 @@ const SalonProfileView = ({ salon, onBack, onBookingComplete }) => {
                   {salon.services.filter((s) => s.category === category).map((service) => (
                     <div
                       key={service.id}
-                      className="p-4 border border-primary-100 rounded-xl hover:border-primary-300 hover:bg-primary-50/60 transition-colors"
+                      className="lift p-4 border border-primary-100 rounded-xl hover:border-gold-400 hover:bg-primary-50/60 transition-colors"
                     >
                       <div className="flex justify-between items-start mb-2">
                         <span className="font-medium text-secondary">{service.name}</span>
-                        <span className="font-bold text-primary-700">${service.price.toLocaleString('es-AR')}</span>
+                        <span className="text-gold font-bold">${service.price.toLocaleString('es-AR')}</span>
                       </div>
                       <span className="inline-flex items-center gap-1 text-xs text-primary-500 bg-primary-50 border border-primary-100 px-2 py-1 rounded-lg">
                         <Icon name="clock" className="w-3 h-3" />

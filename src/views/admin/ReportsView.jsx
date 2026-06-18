@@ -3,6 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import { initialSalons, initialBookings } from '../../data/mockData';
 import AdminLayout from './AdminLayout';
 import Icon from '../../components/ui/Icon';
+import { BarCard, PieCard } from '../../components/ui/Charts';
+import AnimatedNumber from '../../components/ui/AnimatedNumber';
 
 const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
@@ -35,13 +37,31 @@ const ReportsView = () => {
   const totalCommissions = revenueByProf.reduce((s, p) => s + p.commission, 0);
   const netRevenue = totalRevenue - totalCommissions;
 
-  const maxCount = Math.max(...revenueByService.map(s => s.count), 1);
+  // ── Datos para gráficos ──────────────────────────────────────
+  // Servicios más solicitados (cantidad de turnos por servicio)
+  const serviceChartData = revenueByService
+    .filter(s => s.count > 0)
+    .slice(0, 6)
+    .map(s => ({ name: s.name, cantidad: s.count }));
+
+  // Ingresos + comisiones por profesional
+  const profChartData = revenueByProf
+    .filter(p => p.count > 0)
+    .map(p => ({ name: p.name, ingresos: p.revenue, comisiones: p.commission }));
+
+  // Composición de ingresos (neto vs comisiones)
+  const splitChartData = totalRevenue > 0
+    ? [
+        { name: 'Ingreso neto', value: netRevenue },
+        { name: 'Comisiones', value: totalCommissions },
+      ]
+    : [];
 
   return (
     <AdminLayout>
       <div className="space-y-6 animate-fade-in">
         <div className="page-header">
-          <h1 className="text-2xl font-bold text-secondary tracking-tight">Reportes del Mes</h1>
+          <h1 className="page-title">Reportes del Mes</h1>
         </div>
 
         {/* KPIs */}
@@ -51,62 +71,60 @@ const ReportsView = () => {
               <Icon name="calendar" className="w-4 h-4 text-primary-500" />
               <span className="stat-label">Total turnos</span>
             </div>
-            <p className="stat-value">{completedBookings.length}</p>
+            <p className="stat-value"><AnimatedNumber value={completedBookings.length} /></p>
           </div>
           <div className="stat-card">
             <div className="flex items-center gap-2 mb-2">
               <Icon name="dollar" className="w-4 h-4 text-primary-500" />
               <span className="stat-label">Facturación bruta</span>
             </div>
-            <p className="stat-value">${totalRevenue.toLocaleString()}</p>
+            <p className="stat-value text-gold"><AnimatedNumber value={totalRevenue} prefix="$" /></p>
           </div>
           <div className="stat-card">
             <div className="flex items-center gap-2 mb-2">
               <Icon name="user" className="w-4 h-4 text-primary-500" />
               <span className="stat-label">Comisiones</span>
             </div>
-            <p className="stat-value">${totalCommissions.toLocaleString()}</p>
+            <p className="stat-value"><AnimatedNumber value={totalCommissions} prefix="$" /></p>
           </div>
           <div className="stat-card">
             <div className="flex items-center gap-2 mb-2">
               <Icon name="arrow-trending-up" className="w-4 h-4 text-primary-500" />
               <span className="stat-label">Ingreso neto</span>
             </div>
-            <p className="stat-value">${netRevenue.toLocaleString()}</p>
+            <p className="stat-value"><AnimatedNumber value={netRevenue} prefix="$" /></p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Servicios más solicitados */}
-          <div className="card">
-            <div className="card-header">
-              <div className="flex items-center gap-2">
-                <Icon name="chart" className="w-4 h-4 text-primary-500" />
-                <h2 className="font-bold text-secondary">Servicios más solicitados</h2>
-              </div>
-            </div>
-            <div className="card-body space-y-3">
-              {revenueByService.map(svc => (
-                <div key={svc.name}>
-                  <div className="flex justify-between items-center mb-1 text-sm">
-                    <span className="font-medium text-secondary truncate pr-2">{svc.name}</span>
-                    <span className="text-primary-500 flex-shrink-0 text-xs">{svc.count} turnos · ${svc.revenue.toLocaleString()}</span>
-                  </div>
-                  <div className="h-2 bg-primary-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary-500 rounded-full transition-all"
-                      style={{ width: `${(svc.count / maxCount) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-              {revenueByService.length === 0 && (
-                <p className="text-sm text-primary-400">Sin datos disponibles</p>
-              )}
-            </div>
-          </div>
+        {/* Gráficos */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <BarCard
+            title="Servicios más solicitados"
+            subtitle="Cantidad de turnos por servicio"
+            data={serviceChartData}
+            bars={[{ key: 'cantidad', label: 'Turnos' }]}
+          />
+          <BarCard
+            title="Ingresos por profesional"
+            subtitle="Facturación y comisiones"
+            money
+            data={profChartData}
+            bars={[
+              { key: 'ingresos', label: 'Ingresos' },
+              { key: 'comisiones', label: 'Comisiones' },
+            ]}
+          />
+        </div>
 
-          {/* Comisiones por profesional */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <PieCard
+            title="Composición de ingresos"
+            subtitle="Ingreso neto vs comisiones"
+            money
+            data={splitChartData}
+          />
+
+          {/* Detalle por profesional */}
           <div className="card">
             <div className="card-header">
               <div className="flex items-center gap-2">
@@ -143,7 +161,7 @@ const ReportsView = () => {
                 </div>
                 <div className="flex justify-between pt-1 border-t border-primary-100">
                   <span className="font-semibold text-secondary">Ingreso neto</span>
-                  <span className="font-bold text-primary-800">${netRevenue.toLocaleString()}</span>
+                  <span className="font-bold text-gold">${netRevenue.toLocaleString()}</span>
                 </div>
               </div>
             </div>

@@ -99,13 +99,13 @@ const UsersView = () => {
         {/* Page header */}
         <div className="page-header">
           <div>
-            <h1 className="text-2xl font-bold text-secondary tracking-tight">Usuarios del Sistema</h1>
+            <h1 className="page-title">Usuarios del Sistema</h1>
             <p className="text-sm text-primary-500 mt-0.5">{users.length} usuarios registrados</p>
           </div>
           <button
             id="users-new-btn"
             onClick={openNew}
-            className="btn-primary flex items-center gap-2 text-sm"
+            className="btn-gold flex items-center gap-2 text-sm"
           >
             <Icon name="plus" className="w-4 h-4" />
             Nuevo usuario
@@ -296,7 +296,7 @@ const UsersView = () => {
 
             <div className="flex gap-3 mt-6 pt-4 border-t border-primary-100">
               <button onClick={() => setShowModal(false)} className="flex-1 btn-secondary">Cancelar</button>
-              <button id="save-user-btn" onClick={handleSave} className="flex-1 btn-primary">
+              <button id="save-user-btn" onClick={handleSave} className="flex-1 btn-gold">
                 {isNew ? 'Crear usuario' : 'Guardar cambios'}
               </button>
             </div>

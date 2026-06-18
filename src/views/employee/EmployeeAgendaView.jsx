@@ -129,7 +129,7 @@ const EmployeeAgendaView = () => {
         {/* Header */}
         <div className="page-header">
           <div>
-            <h1 className="text-2xl font-bold text-secondary tracking-tight">Agenda</h1>
+            <h1 className="page-title">Agenda</h1>
             <p className="text-primary-500 text-sm mt-1">{salon?.name}</p>
           </div>
           <div className="flex gap-3 items-center">
@@ -142,7 +142,7 @@ const EmployeeAgendaView = () => {
             <button
               id="employee-agenda-new-btn"
               onClick={() => setShowNewForm(true)}
-              className="btn-primary text-sm flex items-center gap-2"
+              className="btn-gold text-sm flex items-center gap-2"
             >
               <Icon name="plus" className="w-4 h-4" />
               Nuevo turno
@@ -301,7 +301,7 @@ const EmployeeAgendaView = () => {
               <button
                 id="employee-save-booking-btn"
                 onClick={handleAddBooking}
-                className="btn-primary text-sm"
+                className="btn-gold text-sm"
               >
                 Guardar turno
               </button>
@@ -342,7 +342,7 @@ const EmployeeAgendaView = () => {
                 return (
                   <li
                     key={b.id}
-                    className="px-6 py-4 flex flex-wrap items-center justify-between gap-3 hover:bg-primary-50/60 transition-colors"
+                    className="lift px-6 py-4 flex flex-wrap items-center justify-between gap-3 hover:bg-primary-50/60 transition-colors"
                   >
                     <div className="flex items-center gap-4">
                       <div className="text-center w-14 flex-shrink-0">
@@ -375,7 +375,7 @@ const EmployeeAgendaView = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="font-semibold text-secondary text-sm">
+                      <span className="font-semibold text-gold text-sm">
                         ${price?.toLocaleString('es-AR')}
                       </span>
                       <span className={statusInfo.badgeClass}>

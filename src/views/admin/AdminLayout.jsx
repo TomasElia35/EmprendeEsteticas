@@ -54,10 +54,15 @@ const AdminLayout = ({ children }) => {
       `}>
         {/* Logo / Salon name area */}
         <div className="px-6 py-6 border-b border-primary-100 flex-shrink-0">
-          <p className="text-lg font-bold text-secondary tracking-tight truncate">
-            {user?.businessName || 'Mi Salón'}
-          </p>
-          <p className="text-xs text-primary-400 font-medium mt-0.5 tracking-wide">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-primary-700 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+              <Icon name="scissors" className="w-4 h-4 text-gold-500" />
+            </div>
+            <p className="text-lg font-serif font-bold text-secondary tracking-tight truncate">
+              {user?.businessName || 'Mi Salón'}
+            </p>
+          </div>
+          <p className="text-xs text-primary-400 font-medium mt-1.5 tracking-wide">
             Panel de Administración
           </p>
         </div>
@@ -79,9 +84,9 @@ const AdminLayout = ({ children }) => {
                 to={link.to}
                 id={`nav-${link.label.toLowerCase().replace(/\s/g, '-')}`}
                 onClick={() => setSidebarOpen(false)}
-                className={`nav-item ${isActive ? 'nav-item-active' : ''} relative`}
+                className={`nav-item border-l-2 ${isActive ? 'nav-item-active border-gold-500' : 'border-transparent'} relative`}
               >
-                <Icon name={link.iconName} className="w-4 h-4 flex-shrink-0" />
+                <Icon name={link.iconName} className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-gold-600' : ''}`} />
                 <span className="flex-1">{link.label}</span>
                 {showBadge && (
                   <span className="badge badge-danger text-[10px] px-1.5 py-0.5 min-w-[1.25rem] text-center">

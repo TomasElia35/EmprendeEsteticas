@@ -58,8 +58,8 @@ const ServicesView = () => {
     <AdminLayout>
       <div className="space-y-6 animate-fade-in">
         <div className="page-header">
-          <h1 className="text-2xl font-bold text-secondary tracking-tight">Servicios y Precios</h1>
-          <button id="admin-create-service-btn" onClick={openCreate} className="btn-primary flex items-center gap-2">
+          <h1 className="page-title">Servicios y Precios</h1>
+          <button id="admin-create-service-btn" onClick={openCreate} className="btn-gold flex items-center gap-2">
             <Icon name="plus" className="w-4 h-4" />
             Nuevo servicio
           </button>
@@ -88,7 +88,7 @@ const ServicesView = () => {
                         <Icon name="clock" className="w-3.5 h-3.5 inline mr-1 text-primary-400" />
                         {svc.duration} min
                       </td>
-                      <td className="table-td font-semibold text-secondary">${svc.price.toLocaleString('es-AR')}</td>
+                      <td className="table-td font-semibold text-gold">${svc.price.toLocaleString('es-AR')}</td>
                       <td className="table-td text-right">
                         <div className="flex gap-1 justify-end">
                           <button
@@ -165,7 +165,7 @@ const ServicesView = () => {
             </div>
             <div className="flex justify-end gap-3 pt-2">
               <button onClick={closeModal} className="btn-secondary">Cancelar</button>
-              <button id="svc-save-btn" onClick={handleSave} className="btn-primary">Guardar</button>
+              <button id="svc-save-btn" onClick={handleSave} className="btn-gold">Guardar</button>
             </div>
           </div>
         </Modal>

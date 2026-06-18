@@ -51,10 +51,10 @@ const RegisterView = () => {
       <div className="w-full max-w-md">
         {/* Brand */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-accent rounded-2xl shadow-card mb-4">
-            <Icon name="scissors" className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-secondary rounded-2xl shadow-card mb-4">
+            <Icon name="scissors" className="w-8 h-8 text-gold-500" />
           </div>
-          <h1 className="text-2xl font-bold text-secondary tracking-tight">Crear cuenta</h1>
+          <h1 className="page-title text-3xl">Crear cuenta</h1>
           <p className="text-sm text-primary-500 mt-1">Registrate para reservar turnos</p>
         </div>
 
@@ -87,7 +87,7 @@ const RegisterView = () => {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full py-3 text-base font-semibold mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="btn-gold w-full py-3 text-base font-semibold mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? 'Creando cuenta...' : 'Crear cuenta'}
             </button>
@@ -95,7 +95,7 @@ const RegisterView = () => {
 
           <div className="mt-5 text-center text-sm text-primary-600">
             ¿Ya tenés cuenta?{' '}
-            <Link to="/login" className="text-accent hover:text-primary-800 font-medium">
+            <Link to="/login" className="text-gold-600 hover:text-gold-700 font-medium">
               Ingresá acá
             </Link>
           </div>

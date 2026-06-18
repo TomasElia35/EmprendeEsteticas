@@ -128,7 +128,7 @@ const AgendaView = () => {
       <div className="space-y-6 animate-fade-in">
         {/* Header */}
         <div className="page-header">
-          <h1 className="text-2xl font-bold text-secondary tracking-tight">Agenda</h1>
+          <h1 className="page-title">Agenda</h1>
           <div className="flex flex-wrap gap-3 items-center">
             <input
               type="date"
@@ -204,11 +204,11 @@ const AgendaView = () => {
                     <li key={b.id} className="flex flex-wrap items-center justify-between gap-3 bg-amber-50 rounded-xl px-4 py-3">
                       <div>
                         <p className="font-semibold text-secondary text-sm">{b.clientName}</p>
-                        <p className="text-xs text-primary-400">{svc?.name} — {b.date} {b.time}hs · Seña ${b.deposit.amount.toLocaleString('es-AR')}</p>
+                        <p className="text-xs text-primary-400">{svc?.name} — {b.date} {b.time}hs · Seña <span className="text-gold font-semibold">${b.deposit.amount.toLocaleString('es-AR')}</span></p>
                       </div>
                       <button
                         onClick={() => handleConfirmDeposit(b.id)}
-                        className="btn-secondary text-xs flex items-center gap-1.5"
+                        className="btn-gold text-xs flex items-center gap-1.5"
                       >
                         <Icon name="check" className="w-3.5 h-3.5" />
                         Confirmar recepción

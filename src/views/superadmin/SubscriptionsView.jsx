@@ -8,7 +8,7 @@ import Icon from '../../components/ui/Icon';
 const PLAN_BADGE = {
   Starter:    'badge badge-neutral',
   Pro:        'badge badge-info',
-  Enterprise: 'badge badge-accent',
+  Enterprise: 'badge-gold',
 };
 
 const PLAN_RING = {
@@ -108,12 +108,14 @@ const SubscriptionsView = () => {
       value: `$${mrr.toLocaleString('es-AR')}`,
       sub: 'Ingreso mensual recurrente',
       icon: 'dollar',
+      highlight: true,
     },
     {
       label: 'ARR',
       value: `$${arr.toLocaleString('es-AR')}`,
       sub: 'Ingreso anual estimado',
       icon: 'arrow-trending-up',
+      highlight: true,
     },
     {
       label: 'Activas',
@@ -134,15 +136,15 @@ const SubscriptionsView = () => {
       <div className="space-y-8 animate-fade-in">
         {/* ── Page header ─────────────────────────────────────────────── */}
         <div className="page-header">
-          <h1 className="text-2xl font-bold text-secondary tracking-tight">Suscripciones</h1>
+          <h1 className="page-title">Suscripciones</h1>
         </div>
 
         {/* ── Métricas ────────────────────────────────────────────────── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {statCards.map(item => (
             <div key={item.label} className="stat-card">
-              <Icon name={item.icon} className="w-5 h-5 text-primary-500 mb-2" />
-              <p className="stat-value">{item.value}</p>
+              <Icon name={item.icon} className={`w-5 h-5 mb-2 ${item.highlight ? 'text-gold-500' : 'text-primary-500'}`} />
+              <p className={`stat-value ${item.highlight ? 'text-gold' : ''}`}>{item.value}</p>
               <p className="stat-label">{item.label}</p>
               <p className="stat-sub">{item.sub}</p>
             </div>
@@ -157,7 +159,7 @@ const SubscriptionsView = () => {
               const activeCount = byPlan.find(p => p.plan === plan.name)?.count || 0;
               const ringClass = PLAN_RING[plan.name] || 'border-primary-300';
               return (
-                <div key={plan.name} className={`card border-2 ${ringClass} overflow-hidden`}>
+                <div key={plan.name} className={`card border-2 ${ringClass} overflow-hidden lift`}>
                   <div className="card-header flex items-center justify-between">
                     <div>
                       <span className={PLAN_BADGE[plan.name] || 'badge badge-neutral'}>{plan.name}</span>
@@ -166,7 +168,7 @@ const SubscriptionsView = () => {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xl font-bold text-secondary">${plan.monthlyPrice.toLocaleString('es-AR')}</p>
+                      <p className="text-xl font-bold text-gold">${plan.monthlyPrice.toLocaleString('es-AR')}</p>
                       <p className="text-xs text-primary-400">/mes</p>
                       <p className="text-xs text-primary-500 mt-0.5">${plan.annualPrice.toLocaleString('es-AR')}/año</p>
                     </div>
@@ -269,7 +271,7 @@ const SubscriptionsView = () => {
                       </td>
                       <td className="table-td text-primary-500 hidden lg:table-cell">{sub.paymentMethod}</td>
                       <td className="table-td text-right">
-                        <p className="font-bold text-secondary">${price.toLocaleString('es-AR')}</p>
+                        <p className="font-bold text-gold">${price.toLocaleString('es-AR')}</p>
                         <p className="text-xs text-primary-400">{priceLabel}</p>
                       </td>
                       <td className="table-td text-right">
@@ -454,7 +456,7 @@ const SubscriptionsView = () => {
 
             <div className="flex justify-end gap-3 pt-1">
               <button onClick={() => setEditSub(null)} className="btn-secondary">Cancelar</button>
-              <button onClick={handleSave} className="btn-primary">Guardar cambios</button>
+              <button onClick={handleSave} className="btn-gold">Guardar cambios</button>
             </div>
           </div>
         )}

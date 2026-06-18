@@ -65,10 +65,10 @@ const EmployeeLayout = ({ children }) => {
         <div className="p-6 border-b border-primary-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary-700 flex items-center justify-center flex-shrink-0">
-              <Icon name="user" className="w-5 h-5 text-white" />
+              <Icon name="scissors" className="w-5 h-5 text-gold-500" />
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-secondary text-sm">Panel Empleado</p>
+              <p className="font-serif font-bold text-secondary text-base">Panel Empleado</p>
               <p className="text-xs text-primary-400 truncate max-w-[120px]">{user?.name}</p>
             </div>
           </div>
@@ -83,12 +83,12 @@ const EmployeeLayout = ({ children }) => {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`nav-item${active ? ' nav-item-active' : ''} relative`}
+                className={`nav-item border-l-2 ${active ? 'nav-item-active border-gold-500' : 'border-transparent'} relative`}
               >
                 <span className="relative flex-shrink-0">
                   <Icon
                     name={item.iconName}
-                    className={`w-5 h-5 ${active ? 'text-primary-700' : 'text-primary-400'}`}
+                    className={`w-5 h-5 ${active ? 'text-gold-600' : 'text-primary-400'}`}
                   />
                   {showBadge && (
                     <span className="absolute -top-1.5 -right-1.5 bg-accent text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">

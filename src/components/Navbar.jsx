@@ -39,9 +39,9 @@ const Navbar = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5">
           <div className="w-8 h-8 bg-primary-700 rounded-lg flex items-center justify-center shadow-sm">
-            <Icon name="sparkles" className="w-4 h-4 text-white" />
+            <Icon name="scissors" className="w-4 h-4 text-gold-500" />
           </div>
-          <span className="text-lg font-bold text-secondary tracking-tight">EstéticaHub</span>
+          <span className="text-xl font-serif font-bold text-secondary tracking-tight">EstéticaHub</span>
         </Link>
 
         {/* Right side */}
@@ -154,10 +154,10 @@ const Navbar = () => {
 const NavLink = ({ to, active, label }) => (
   <Link
     to={to}
-    className={`px-3 py-2 text-sm font-medium rounded-xl transition-colors ${
+    className={`px-3 py-2 text-sm font-medium rounded-xl transition-colors border-l-2 ${
       active
-        ? 'bg-primary-100 text-primary-800'
-        : 'text-primary-600 hover:text-secondary hover:bg-primary-50'
+        ? 'bg-gold-50 text-secondary border-gold-500'
+        : 'border-transparent text-primary-600 hover:text-secondary hover:bg-primary-50'
     }`}
   >
     {label}

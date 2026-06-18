@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@500;600;700;800&display=swap');
 
 @import "tailwindcss";
 @config "../tailwind.config.js";
@@ -14,6 +14,10 @@
   h1 { @apply text-2xl font-bold text-secondary tracking-tight; }
   h2 { @apply text-lg font-semibold text-secondary; }
   h3 { @apply text-base font-semibold text-secondary; }
+
+  /* Serif display headings — premium feel */
+  .display { @apply font-serif font-bold text-secondary tracking-tight; }
+  .page-title { @apply font-serif text-2xl md:text-3xl font-bold text-secondary tracking-tight; }
 
   input, select, textarea {
     @apply font-sans;
@@ -127,6 +131,42 @@
   .status-dot-red    { @apply bg-red-400; }
   .status-dot-blue   { @apply bg-blue-400; }
   .status-dot-gray   { @apply bg-primary-300; }
+
+  /* ── Gold accent ─────────────────────────────────────────── */
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2
+           bg-gold-500 text-secondary
+           px-5 py-2.5 rounded-xl font-semibold text-sm
+           hover:bg-gold-600 hover:text-white active:scale-[0.98]
+           transition-all shadow-card cursor-pointer
+           focus:outline-none focus:ring-2 focus:ring-gold-400 focus:ring-offset-1;
+  }
+  .text-gold { color: #B8942A; }
+  .badge-gold { @apply bg-gold-50 text-gold-700 border border-gold-100; }
+
+  /* ── Glassmorphism (heroes / headers) ────────────────────── */
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-card;
+  }
+  .glass-dark {
+    @apply bg-secondary/80 backdrop-blur-md border border-white/10;
+  }
+
+  /* ── Chart card wrapper ──────────────────────────────────── */
+  .chart-card {
+    @apply bg-white rounded-2xl border border-primary-100 shadow-card p-5;
+  }
+  .chart-title {
+    @apply font-serif text-base font-bold text-secondary mb-1;
+  }
+  .chart-sub {
+    @apply text-xs text-primary-400 mb-4;
+  }
+
+  /* ── Interactive lift ────────────────────────────────────── */
+  .lift {
+    @apply transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card-md;
+  }
 
   /* ── Nav items (layouts) ─────────────────────────────────── */
   .nav-item {

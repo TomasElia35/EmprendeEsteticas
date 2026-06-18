@@ -13,27 +13,30 @@ const HomeView = ({ salons, onSelectSalon }) => {
   return (
     <div className="space-y-10 animate-fade-in">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-primary-900 to-primary-700 text-white rounded-3xl py-20 px-6 flex flex-col items-center text-center shadow-modal">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-          Encuentra la excelencia en estética
+      <section className="relative bg-gradient-to-br from-primary-900 to-primary-700 text-white rounded-3xl py-20 px-6 flex flex-col items-center text-center shadow-modal overflow-hidden">
+        <div className="glass inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6">
+          <Icon name="scissors" className="w-8 h-8 text-gold-500" />
+        </div>
+        <h1 className="page-title display text-4xl md:text-6xl mb-4">
+          Encuentra la <span className="text-gold-500">excelencia</span> en estética
         </h1>
-        <p className="text-primary-300 text-lg md:text-xl max-w-2xl mb-10">
+        <p className="font-serif text-primary-200 text-lg md:text-xl max-w-2xl mb-10">
           Reserva turnos en los mejores salones y barberías de la ciudad con profesionales de primer nivel.
         </p>
 
-        <div className="bg-white rounded-2xl flex items-center px-5 py-3 shadow-card gap-3 w-full max-w-lg">
-          <Icon name="search" className="w-5 h-5 text-primary-400 flex-shrink-0" />
+        <div className="glass rounded-2xl flex items-center px-5 py-3 shadow-card gap-3 w-full max-w-lg">
+          <Icon name="search" className="w-5 h-5 text-gold-600 flex-shrink-0" />
           <input
             type="text"
             placeholder="Buscar por salón o categoría..."
-            className="flex-1 bg-transparent text-secondary placeholder-primary-400 text-base focus:outline-none"
+            className="flex-1 bg-transparent text-secondary placeholder-primary-500 text-base focus:outline-none"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="text-primary-400 hover:text-primary-600 transition-colors"
+              className="text-primary-500 hover:text-secondary transition-colors"
             >
               <Icon name="x" className="w-4 h-4" />
             </button>

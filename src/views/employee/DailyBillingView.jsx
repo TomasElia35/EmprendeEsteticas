@@ -42,7 +42,7 @@ const DailyBillingView = () => {
         {/* Header */}
         <div className="page-header flex-wrap gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-secondary tracking-tight">Facturación</h1>
+            <h1 className="page-title">Facturación</h1>
             <p className="text-primary-500 text-sm mt-1">{salon?.name}</p>
           </div>
 
@@ -244,7 +244,7 @@ const DailyBillingView = () => {
             <p className="text-white/70 text-sm">
               {mode === 'day' ? 'Facturación total del día' : 'Facturación total del período'}
             </p>
-            <p className="text-3xl font-bold mt-1">${grandTotal.toLocaleString('es-AR')}</p>
+            <p className="display text-3xl font-bold mt-1 text-gold-400">${grandTotal.toLocaleString('es-AR')}</p>
           </div>
           <Icon name="chart" className="w-10 h-10 text-white/40" />
         </div>

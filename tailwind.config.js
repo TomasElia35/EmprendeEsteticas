@@ -21,9 +21,19 @@ export default {
         },
         secondary: '#1C1007',
         accent:    '#B8714F',
+        gold: {
+          DEFAULT: '#D4AF37',
+          50:  '#FBF6E4',
+          100: '#F6EAC0',
+          400: '#DFC159',
+          500: '#D4AF37',
+          600: '#B8942A',
+          700: '#94761F',
+        },
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans:  ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        serif: ['"Playfair Display"', 'Georgia', 'ui-serif', 'serif'],
       },
       borderRadius: {
         'xl':  '0.75rem',
