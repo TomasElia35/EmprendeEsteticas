@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import Icon from './ui/Icon';
 
 /**
  * Modal de promoción del local.
@@ -26,21 +27,20 @@ const PromotionModal = ({ promo, onClose, onCta }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Card */}
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in">
+      {/* Modal card */}
+      <div className="relative bg-white rounded-3xl shadow-modal w-full max-w-sm overflow-hidden animate-fade-in">
         {/* Close button */}
         <button
           id="promo-modal-close"
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center hover:bg-white transition-colors shadow"
+          className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center hover:bg-white transition-colors shadow"
+          aria-label="Cerrar"
         >
-          <svg className="w-4 h-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <Icon name="x" className="w-4 h-4 text-secondary" />
         </button>
 
         {/* Image / gradient header */}
@@ -51,38 +51,50 @@ const PromotionModal = ({ promo, onClose, onCta }) => {
             className="w-full h-48 object-cover"
           />
         ) : (
-          <div className="h-32 bg-gradient-to-br from-primary-600 via-primary-500 to-secondary flex items-center justify-center">
-            <span className="text-5xl">🎉</span>
+          <div className="h-32 bg-gradient-to-br from-primary-600 via-primary-500 to-primary-900 flex items-center justify-center">
+            <Icon name="sparkles" className="w-12 h-12 text-white/80" />
           </div>
         )}
 
         {/* Content */}
         <div className="p-6">
-          <div className="inline-flex items-center gap-1.5 bg-primary-50 text-primary-700 text-xs font-semibold px-2.5 py-1 rounded-full mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse"></span>
+          {/* Active badge */}
+          <div className="inline-flex items-center gap-1.5 bg-primary-50 border border-primary-200 text-primary-700 text-xs font-semibold px-2.5 py-1 rounded-full mb-4">
+            <span className="status-dot status-dot-green"></span>
             Promoción activa
           </div>
 
-          <h2 className="text-xl font-bold text-secondary mb-2 leading-snug">{promo.title}</h2>
-          <p className="text-primary-600 text-sm leading-relaxed mb-5">{promo.description}</p>
+          <h2 className="text-xl font-bold text-secondary mb-2 leading-snug">
+            {promo.title}
+          </h2>
+          <p className="text-primary-600 text-sm leading-relaxed mb-4">
+            {promo.description}
+          </p>
 
           {promo.expiresAt && (
-            <p className="text-xs text-primary-400 mb-4">
-              Válido hasta: {new Date(promo.expiresAt).toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })}
-            </p>
+            <div className="flex items-center gap-1.5 mb-5">
+              <Icon name="calendar" className="w-3.5 h-3.5 text-primary-400" />
+              <p className="text-xs text-primary-400">
+                Válido hasta:{' '}
+                {new Date(promo.expiresAt).toLocaleDateString('es-AR', {
+                  day: 'numeric',
+                  month: 'long',
+                })}
+              </p>
+            </div>
           )}
 
           <button
             id="promo-modal-cta"
             onClick={() => { onCta(); onClose(); }}
-            className="w-full btn-primary py-3 rounded-xl font-semibold text-base"
+            className="btn-primary w-full py-3 text-base font-semibold"
           >
             {promo.cta || 'Reservar ahora'}
           </button>
 
           <button
             onClick={onClose}
-            className="w-full mt-2 text-sm text-primary-400 hover:text-primary-600 transition-colors py-1"
+            className="btn-ghost w-full mt-2 text-sm text-primary-400 hover:text-primary-600"
           >
             Cerrar
           </button>

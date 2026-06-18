@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Icon from '../components/ui/Icon';
 
 const DashboardView = ({ bookings, salons }) => {
   // Para el MVP, asumimos que el administrador está viendo el primer salón
@@ -22,16 +23,16 @@ const DashboardView = ({ bookings, salons }) => {
 
   return (
     <div className="animate-fade-in max-w-6xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div className="page-header mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-secondary mb-2">Panel de Control</h1>
-          <p className="text-primary-600">Gestión de reservas diarias para tu negocio.</p>
+          <h1 className="text-2xl font-bold text-secondary tracking-tight">Panel de Control</h1>
+          <p className="text-primary-600 mt-1">Gestión de reservas diarias para tu negocio.</p>
         </div>
-        
-        <select 
-          value={selectedSalonId} 
+
+        <select
+          value={selectedSalonId}
           onChange={(e) => setSelectedSalonId(Number(e.target.value))}
-          className="bg-white border border-primary-300 text-secondary rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none shadow-sm"
+          className="input w-auto"
         >
           {salons.map(s => (
             <option key={s.id} value={s.id}>{s.name}</option>
@@ -39,56 +40,66 @@ const DashboardView = ({ bookings, salons }) => {
         </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-primary-100 flex flex-col items-center justify-center text-center">
-          <span className="text-sm font-medium text-primary-500 uppercase tracking-wider mb-1">Turnos de Hoy</span>
-          <span className="text-4xl font-bold text-secondary">{salonBookings.length}</span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+        <div className="stat-card">
+          <div className="flex items-center gap-2 mb-3">
+            <Icon name="calendar" className="w-4 h-4 text-primary-500" />
+            <span className="stat-label">Turnos de Hoy</span>
+          </div>
+          <span className="stat-value">{salonBookings.length}</span>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-primary-100 flex flex-col items-center justify-center text-center">
-          <span className="text-sm font-medium text-primary-500 uppercase tracking-wider mb-1">Profesionales Activos</span>
-          <span className="text-4xl font-bold text-secondary">{selectedSalon?.professionals.length || 0}</span>
+
+        <div className="stat-card">
+          <div className="flex items-center gap-2 mb-3">
+            <Icon name="users" className="w-4 h-4 text-primary-500" />
+            <span className="stat-label">Profesionales Activos</span>
+          </div>
+          <span className="stat-value">{selectedSalon?.professionals.length || 0}</span>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-md border border-primary-200 overflow-hidden">
-        <div className="px-6 py-5 border-b border-primary-100 bg-primary-50 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-secondary">Agenda del Día</h2>
-          <span className="text-sm font-medium text-primary-600">{new Date().toLocaleDateString()}</span>
+      <div className="card overflow-hidden">
+        <div className="card-header flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Icon name="clock" className="w-5 h-5 text-primary-500" />
+            <h2 className="text-lg font-semibold text-secondary">Agenda del Día</h2>
+          </div>
+          <span className="text-sm font-medium text-primary-600">
+            {new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </span>
         </div>
-        
+
         {salonBookings.length > 0 ? (
-          <div className="overflow-x-auto">
+          <div className="table-container">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-white text-primary-500 text-xs uppercase tracking-wider border-b border-primary-100">
-                  <th className="p-4 font-medium">Horario</th>
-                  <th className="p-4 font-medium">Cliente</th>
-                  <th className="p-4 font-medium">Servicio</th>
-                  <th className="p-4 font-medium">Profesional</th>
-                  <th className="p-4 font-medium text-center">Estado</th>
+                <tr className="border-b border-primary-100">
+                  <th className="table-th">Horario</th>
+                  <th className="table-th">Cliente</th>
+                  <th className="table-th">Servicio</th>
+                  <th className="table-th">Profesional</th>
+                  <th className="table-th text-center">Estado</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-primary-100">
                 {salonBookings.sort((a, b) => a.time.localeCompare(b.time)).map((booking) => (
-                  <tr key={booking.id} className="hover:bg-primary-50/50 transition-colors">
-                    <td className="p-4 font-semibold text-secondary">{booking.time}</td>
-                    <td className="p-4">
+                  <tr key={booking.id} className="hover:bg-primary-50/60 transition-colors">
+                    <td className="table-td font-semibold text-secondary">{booking.time}</td>
+                    <td className="table-td">
                       <div className="font-medium text-secondary">{booking.clientName}</div>
-                      <div className="text-xs text-primary-500">{booking.clientPhone}</div>
+                      <div className="text-xs text-primary-500 mt-0.5">{booking.clientPhone}</div>
                     </td>
-                    <td className="p-4 text-primary-700">{getServiceName(booking.serviceId)}</td>
-                    <td className="p-4 text-primary-700">
+                    <td className="table-td text-primary-700">{getServiceName(booking.serviceId)}</td>
+                    <td className="table-td text-primary-700">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary-200 flex items-center justify-center text-xs font-bold text-primary-700">
+                        <div className="w-7 h-7 rounded-full bg-primary-100 border border-primary-200 flex items-center justify-center text-xs font-bold text-primary-700">
                           {getProfessionalName(booking.professionalId).charAt(0)}
                         </div>
-                        {getProfessionalName(booking.professionalId)}
+                        <span>{getProfessionalName(booking.professionalId)}</span>
                       </div>
                     </td>
-                    <td className="p-4 text-center">
-                      <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
-                        Confirmado
-                      </span>
+                    <td className="table-td text-center">
+                      <span className="badge badge-success">Confirmado</span>
                     </td>
                   </tr>
                 ))}
@@ -96,10 +107,12 @@ const DashboardView = ({ bookings, salons }) => {
             </table>
           </div>
         ) : (
-          <div className="p-12 text-center">
-            <svg className="w-16 h-16 mx-auto text-primary-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-            <h3 className="text-lg font-medium text-secondary mb-1">No hay turnos para hoy</h3>
-            <p className="text-primary-500">Tu agenda está libre por el momento.</p>
+          <div className="card-body py-16 text-center">
+            <div className="flex justify-center mb-4">
+              <Icon name="calendar" className="w-12 h-12 text-primary-300" />
+            </div>
+            <h3 className="text-base font-semibold text-secondary mb-1">No hay turnos para hoy</h3>
+            <p className="text-primary-500 text-sm">Tu agenda está libre por el momento.</p>
           </div>
         )}
       </div>

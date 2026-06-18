@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { initialSalons, initialBookings } from '../../data/mockData';
 import AdminLayout from './AdminLayout';
-import StatCard from '../../components/ui/StatCard';
+import Icon from '../../components/ui/Icon';
 
 const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
@@ -39,27 +39,58 @@ const ReportsView = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-secondary">Reportes del Mes</h1>
+      <div className="space-y-6 animate-fade-in">
+        <div className="page-header">
+          <h1 className="text-2xl font-bold text-secondary tracking-tight">Reportes del Mes</h1>
+        </div>
 
         {/* KPIs */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard label="Total turnos" value={completedBookings.length} icon="📅" color="primary" />
-          <StatCard label="Facturación bruta" value={`$${totalRevenue.toLocaleString()}`} icon="💰" color="green" />
-          <StatCard label="Comisiones" value={`$${totalCommissions.toLocaleString()}`} icon="👤" color="orange" />
-          <StatCard label="Ingreso neto" value={`$${netRevenue.toLocaleString()}`} icon="📈" color="blue" />
+          <div className="stat-card">
+            <div className="flex items-center gap-2 mb-2">
+              <Icon name="calendar" className="w-4 h-4 text-primary-500" />
+              <span className="stat-label">Total turnos</span>
+            </div>
+            <p className="stat-value">{completedBookings.length}</p>
+          </div>
+          <div className="stat-card">
+            <div className="flex items-center gap-2 mb-2">
+              <Icon name="dollar" className="w-4 h-4 text-primary-500" />
+              <span className="stat-label">Facturación bruta</span>
+            </div>
+            <p className="stat-value">${totalRevenue.toLocaleString()}</p>
+          </div>
+          <div className="stat-card">
+            <div className="flex items-center gap-2 mb-2">
+              <Icon name="user" className="w-4 h-4 text-primary-500" />
+              <span className="stat-label">Comisiones</span>
+            </div>
+            <p className="stat-value">${totalCommissions.toLocaleString()}</p>
+          </div>
+          <div className="stat-card">
+            <div className="flex items-center gap-2 mb-2">
+              <Icon name="arrow-trending-up" className="w-4 h-4 text-primary-500" />
+              <span className="stat-label">Ingreso neto</span>
+            </div>
+            <p className="stat-value">${netRevenue.toLocaleString()}</p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Servicios más solicitados */}
-          <div className="bg-white rounded-2xl border border-primary-100 shadow-sm p-6">
-            <h2 className="font-bold text-secondary mb-4">Servicios más solicitados</h2>
-            <div className="space-y-3">
+          <div className="card">
+            <div className="card-header">
+              <div className="flex items-center gap-2">
+                <Icon name="chart" className="w-4 h-4 text-primary-500" />
+                <h2 className="font-bold text-secondary">Servicios más solicitados</h2>
+              </div>
+            </div>
+            <div className="card-body space-y-3">
               {revenueByService.map(svc => (
                 <div key={svc.name}>
                   <div className="flex justify-between items-center mb-1 text-sm">
                     <span className="font-medium text-secondary truncate pr-2">{svc.name}</span>
-                    <span className="text-primary-500 flex-shrink-0">{svc.count} turnos · ${svc.revenue.toLocaleString()}</span>
+                    <span className="text-primary-500 flex-shrink-0 text-xs">{svc.count} turnos · ${svc.revenue.toLocaleString()}</span>
                   </div>
                   <div className="h-2 bg-primary-100 rounded-full overflow-hidden">
                     <div
@@ -69,42 +100,51 @@ const ReportsView = () => {
                   </div>
                 </div>
               ))}
-              {revenueByService.length === 0 && <p className="text-sm text-primary-400">Sin datos disponibles</p>}
+              {revenueByService.length === 0 && (
+                <p className="text-sm text-primary-400">Sin datos disponibles</p>
+              )}
             </div>
           </div>
 
           {/* Comisiones por profesional */}
-          <div className="bg-white rounded-2xl border border-primary-100 shadow-sm p-6">
-            <h2 className="font-bold text-secondary mb-4">Comisiones por profesional</h2>
-            <div className="space-y-3">
+          <div className="card">
+            <div className="card-header">
+              <div className="flex items-center gap-2">
+                <Icon name="users" className="w-4 h-4 text-primary-500" />
+                <h2 className="font-bold text-secondary">Comisiones por profesional</h2>
+              </div>
+            </div>
+            <div className="card-body space-y-3">
               {revenueByProf.map(prof => (
-                <div key={prof.name} className="flex items-center gap-3 p-3 rounded-xl bg-primary-50">
+                <div key={prof.name} className="flex items-center gap-3 p-3 rounded-xl bg-primary-50 hover:bg-primary-50/60 transition-colors">
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-secondary text-sm truncate">{prof.name}</p>
                     <p className="text-xs text-primary-500">{prof.count} turnos · {prof.commissionPct}% comisión</p>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="text-sm font-bold text-primary-700">${prof.revenue.toLocaleString()}</p>
-                    <p className="text-xs text-green-600 font-medium">+${prof.commission.toLocaleString()}</p>
+                    <p className="text-xs text-primary-600 font-medium">+${prof.commission.toLocaleString()}</p>
                   </div>
                 </div>
               ))}
-              {revenueByProf.length === 0 && <p className="text-sm text-primary-400">Sin datos disponibles</p>}
-            </div>
+              {revenueByProf.length === 0 && (
+                <p className="text-sm text-primary-400">Sin datos disponibles</p>
+              )}
 
-            {/* Summary */}
-            <div className="mt-4 pt-4 border-t border-primary-100 space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span className="text-primary-600">Total facturado</span>
-                <span className="font-bold text-secondary">${totalRevenue.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-primary-600">Total comisiones</span>
-                <span className="font-bold text-orange-600">- ${totalCommissions.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between pt-1 border-t border-primary-100">
-                <span className="font-semibold text-secondary">Ingreso neto</span>
-                <span className="font-bold text-green-600">${netRevenue.toLocaleString()}</span>
+              {/* Summary */}
+              <div className="mt-4 pt-4 border-t border-primary-100 space-y-1 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-primary-600">Total facturado</span>
+                  <span className="font-bold text-secondary">${totalRevenue.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-primary-600">Total comisiones</span>
+                  <span className="font-bold text-primary-700">- ${totalCommissions.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between pt-1 border-t border-primary-100">
+                  <span className="font-semibold text-secondary">Ingreso neto</span>
+                  <span className="font-bold text-primary-800">${netRevenue.toLocaleString()}</span>
+                </div>
               </div>
             </div>
           </div>

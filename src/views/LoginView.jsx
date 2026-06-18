@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../components/ui/Toast';
+import Icon from '../components/ui/Icon';
 
 const ROLE_HINTS = [
   { label: 'SuperAdmin', email: 'super@estetica.app', password: 'super123', color: 'bg-secondary text-white' },
   { label: 'Admin (Elegance)', email: 'admin@elegance.com', password: 'admin123', color: 'bg-primary-700 text-white' },
   { label: 'Admin (Gentleman)', email: 'admin@gentleman.com', password: 'admin123', color: 'bg-primary-700 text-white' },
   { label: 'Admin (Aura)', email: 'admin@aura.com', password: 'admin123', color: 'bg-primary-700 text-white' },
-  { label: 'Empleado (Elegance)', email: 'pedro@elegance.com', password: 'emp123', color: 'bg-indigo-500 text-white' },
-  { label: 'Empleado (Gentleman)', email: 'camila@gentleman.com', password: 'emp123', color: 'bg-indigo-500 text-white' },
-  { label: 'Cliente', email: 'ana@test.com', password: 'cliente123', color: 'bg-primary-500 text-white' },
+  { label: 'Empleado (Elegance)', email: 'pedro@elegance.com', password: 'emp123', color: 'bg-primary-500 text-white' },
+  { label: 'Empleado (Gentleman)', email: 'camila@gentleman.com', password: 'emp123', color: 'bg-primary-500 text-white' },
+  { label: 'Cliente', email: 'ana@test.com', password: 'cliente123', color: 'bg-primary-400 text-white' },
 ];
 
 const LoginView = () => {
@@ -53,83 +54,84 @@ const LoginView = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-100 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-primary-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
+        {/* Brand */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-600 rounded-2xl shadow-lg mb-4">
-            <span className="text-white font-bold text-3xl">E</span>
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-accent rounded-2xl shadow-card mb-4">
+            <Icon name="scissors" className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-secondary">EstéticaHub</h1>
-          <p className="text-primary-600 mt-1">Iniciá sesión para continuar</p>
+          <h1 className="text-2xl font-bold text-secondary tracking-tight">EstéticaHub</h1>
+          <p className="text-sm text-primary-500 mt-1">Iniciá sesión para continuar</p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-primary-100 p-8">
+        <div className="bg-white rounded-3xl shadow-modal border border-primary-100 p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-primary-700 mb-1.5">Email</label>
+              <label className="label" htmlFor="login-email">Email</label>
               <input
                 id="login-email"
                 type="email"
                 required
                 value={form.email}
                 onChange={e => setForm({ ...form, email: e.target.value })}
-                className="w-full border border-primary-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition text-sm"
+                className="input"
                 placeholder="tu@email.com"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-primary-700 mb-1.5">Contraseña</label>
+              <label className="label" htmlFor="login-password">Contraseña</label>
               <input
                 id="login-password"
                 type="password"
                 required
                 value={form.password}
                 onChange={e => setForm({ ...form, password: e.target.value })}
-                className="w-full border border-primary-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition text-sm"
+                className="input"
                 placeholder="••••••••"
               />
             </div>
 
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">
-                {error}
+              <div className="flex items-start gap-3 border-l-4 border-red-400 bg-red-50 rounded-xl px-4 py-3">
+                <Icon name="alert" className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                <span className="text-sm text-red-700">{error}</span>
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-primary py-3 text-base font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+              className="btn-primary w-full py-3 text-base font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? 'Ingresando...' : 'Ingresar'}
             </button>
           </form>
 
-          <div className="mt-4 text-center text-sm text-primary-600">
+          <div className="mt-5 text-center text-sm text-primary-600">
             ¿No tenés cuenta?{' '}
-            <Link to="/register" className="font-semibold text-primary-800 hover:underline">
+            <Link to="/register" className="text-accent hover:text-primary-800 font-medium">
               Registrate
             </Link>
           </div>
         </div>
 
         {/* Quick Access Hints */}
-        <div className="mt-8 bg-white/80 rounded-2xl border border-primary-100 p-5 shadow-sm">
-          <p className="text-xs font-semibold text-primary-500 uppercase tracking-wider mb-3">Acceso rápido (demo)</p>
+        <div className="mt-6 bg-white rounded-2xl border border-primary-100 shadow-card p-5">
+          <p className="section-label mb-3">Acceso rápido (demo)</p>
           <div className="flex flex-wrap gap-2">
             {ROLE_HINTS.map((h) => (
               <button
                 key={h.email}
                 onClick={() => fillHint(h)}
-                className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-opacity hover:opacity-80 ${h.color}`}
+                className={`text-xs px-3 py-1.5 rounded-xl font-medium transition-opacity hover:opacity-80 ${h.color}`}
               >
                 {h.label}
               </button>
             ))}
           </div>
-          <p className="text-xs text-primary-400 mt-2">Hacé clic en un rol para autocompletar las credenciales.</p>
+          <p className="text-xs text-primary-400 mt-3">Hacé clic en un rol para autocompletar las credenciales.</p>
         </div>
       </div>
     </div>

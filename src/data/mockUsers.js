@@ -119,6 +119,18 @@ export const findUser = (email, password) => {
   }
 };
 
+// Helper para verificar si un email ya existe (sin importar contraseña)
+export const findUserByEmail = (email) => {
+  const staticUser = mockUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
+  if (staticUser) return staticUser;
+  try {
+    const stored = JSON.parse(localStorage.getItem('estetica_registered_clients') || '[]');
+    return stored.find((u) => u.email.toLowerCase() === email.toLowerCase()) || null;
+  } catch {
+    return null;
+  }
+};
+
 // Helper para buscar usuario por ID
 export const findUserById = (id) => {
   const staticUser = mockUsers.find((u) => u.id === id);

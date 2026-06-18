@@ -4,6 +4,7 @@ import { initialSalons } from '../../data/mockData';
 import AdminLayout from './AdminLayout';
 import Modal from '../../components/ui/Modal';
 import { toast } from '../../components/ui/Toast';
+import Icon from '../../components/ui/Icon';
 
 const emptyProf = { name: '', role: '', commission: 40, specialties: '', avatar: '', assignedServices: [] };
 
@@ -92,36 +93,42 @@ const ProfessionalsView = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-secondary">Personal</h1>
-          <button id="admin-create-prof-btn" onClick={openCreate} className="btn-primary">+ Agregar profesional</button>
+      <div className="space-y-6 animate-fade-in">
+        <div className="page-header">
+          <h1 className="text-2xl font-bold text-secondary tracking-tight">Personal</h1>
+          <button id="admin-create-prof-btn" onClick={openCreate} className="btn-primary flex items-center gap-2">
+            <Icon name="plus" className="w-4 h-4" />
+            Agregar profesional
+          </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {salon?.professionals.map(prof => {
             const assignedSvcs = getAssignedServiceNames(prof);
             return (
-              <div key={prof.id} className="bg-white rounded-2xl border border-primary-100 shadow-sm p-5 flex gap-4">
-                <img src={prof.avatar} alt={prof.name} className="w-16 h-16 rounded-xl flex-shrink-0" />
+              <div key={prof.id} className="card p-5 flex gap-4">
+                <img
+                  src={prof.avatar}
+                  alt={prof.name}
+                  className="w-14 h-14 rounded-xl object-cover flex-shrink-0"
+                />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <h3 className="font-bold text-secondary">{prof.name}</h3>
-                      <p className="text-sm text-primary-600">{prof.role}</p>
+                      <p className="text-sm text-primary-500">{prof.role}</p>
                     </div>
-                    <span className="text-xs font-bold bg-green-100 text-green-700 px-2.5 py-1 rounded-full flex-shrink-0">
+                    <span className="badge badge-neutral flex-shrink-0">
                       {prof.commission}% comisión
                     </span>
                   </div>
 
-                  {/* Servicios asignados */}
                   {assignedSvcs.length > 0 && (
-                    <div className="mt-2">
-                      <p className="text-xs text-primary-400 font-medium mb-1">Servicios asignados:</p>
+                    <div className="mt-3">
+                      <p className="section-label mb-1.5">Servicios asignados</p>
                       <div className="flex flex-wrap gap-1.5">
                         {assignedSvcs.map(svc => (
-                          <span key={svc.id} className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-0.5 rounded-full">
+                          <span key={svc.id} className="badge badge-accent">
                             {svc.name}
                           </span>
                         ))}
@@ -129,18 +136,29 @@ const ProfessionalsView = () => {
                     </div>
                   )}
 
-                  {/* Especialidades (texto libre) */}
                   {prof.specialties?.length > 0 && assignedSvcs.length === 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-2">
+                    <div className="flex flex-wrap gap-1.5 mt-3">
                       {prof.specialties.map(sp => (
-                        <span key={sp} className="text-xs bg-primary-50 text-primary-700 px-2 py-0.5 rounded-full">{sp}</span>
+                        <span key={sp} className="badge badge-neutral">{sp}</span>
                       ))}
                     </div>
                   )}
 
-                  <div className="flex gap-2 mt-3">
-                    <button onClick={() => openEdit(prof)} className="text-xs btn-secondary py-1.5 px-3">Editar</button>
-                    <button onClick={() => setDeleteConfirm(prof.id)} className="text-xs text-red-500 border border-red-200 hover:border-red-300 px-3 py-1.5 rounded-lg transition-colors">Eliminar</button>
+                  <div className="flex gap-2 mt-4">
+                    <button
+                      onClick={() => openEdit(prof)}
+                      className="btn-ghost flex items-center gap-1.5 text-sm"
+                    >
+                      <Icon name="edit" className="w-4 h-4" />
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm(prof.id)}
+                      className="btn-ghost flex items-center gap-1.5 text-sm text-red-600 hover:text-red-700"
+                    >
+                      <Icon name="trash" className="w-4 h-4" />
+                      Eliminar
+                    </button>
                   </div>
                 </div>
               </div>
@@ -148,7 +166,6 @@ const ProfessionalsView = () => {
           })}
         </div>
 
-        {/* Modal crear/editar */}
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editItem ? 'Editar Profesional' : 'Nuevo Profesional'}>
           <div className="space-y-4">
             {[
@@ -157,48 +174,63 @@ const ProfessionalsView = () => {
               { name: 'specialties', label: 'Especialidades (separadas por coma)', type: 'text', placeholder: 'Corte, Color, Estética', id: 'prof-specialties' },
             ].map(f => (
               <div key={f.name}>
-                <label className="block text-sm font-medium text-primary-700 mb-1">{f.label}</label>
-                <input id={f.id} name={f.name} type={f.type} value={form[f.name] || ''} onChange={handleChange}
+                <label className="label">{f.label}</label>
+                <input
+                  id={f.id}
+                  name={f.name}
+                  type={f.type}
+                  value={form[f.name] || ''}
+                  onChange={handleChange}
                   placeholder={f.placeholder}
-                  className="w-full border border-primary-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                  className="input"
+                />
               </div>
             ))}
 
             <div>
-              <label className="block text-sm font-medium text-primary-700 mb-1">Comisión (%)</label>
-              <input id="prof-commission" name="commission" type="number" min="0" max="100" value={form.commission} onChange={handleChange}
-                className="w-full border border-primary-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+              <label className="label">Comisión (%)</label>
+              <input
+                id="prof-commission"
+                name="commission"
+                type="number"
+                min="0"
+                max="100"
+                value={form.commission}
+                onChange={handleChange}
+                className="input"
+              />
             </div>
 
-            {/* Asignación de servicios */}
             {salon?.services && salon.services.length > 0 && (
               <div>
-                <label className="block text-sm font-medium text-primary-700 mb-2">Servicios que realiza</label>
-                <div className="border border-primary-200 rounded-lg overflow-hidden divide-y divide-primary-100">
+                <label className="label">Servicios que realiza</label>
+                <div className="border border-primary-200 rounded-xl overflow-hidden divide-y divide-primary-100">
                   {salon.services.map(svc => {
                     const checked = form.assignedServices?.includes(svc.id) || false;
                     return (
                       <label
                         key={svc.id}
-                        className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors ${checked ? 'bg-indigo-50' : 'hover:bg-primary-50'}`}
+                        className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors ${checked ? 'bg-primary-100' : 'hover:bg-primary-50'}`}
                       >
                         <input
                           type="checkbox"
                           checked={checked}
                           onChange={() => toggleService(svc.id)}
-                          className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-primary-300"
+                          className="w-4 h-4 rounded border-primary-300 accent-primary-700"
                         />
                         <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-medium ${checked ? 'text-indigo-800' : 'text-secondary'}`}>{svc.name}</p>
+                          <p className={`text-sm font-medium ${checked ? 'text-primary-800' : 'text-secondary'}`}>{svc.name}</p>
                           <p className="text-xs text-primary-400">{svc.category} · {svc.duration} min · ${svc.price.toLocaleString('es-AR')}</p>
                         </div>
-                        {checked && <span className="text-indigo-500 text-xs font-semibold">✓ Asignado</span>}
+                        {checked && (
+                          <Icon name="check-circle" className="w-4 h-4 text-primary-600 flex-shrink-0" />
+                        )}
                       </label>
                     );
                   })}
                 </div>
                 {form.assignedServices?.length === 0 && (
-                  <p className="text-xs text-primary-400 mt-1">Sin servicios seleccionados — el profesional aparecerá para todos.</p>
+                  <p className="text-xs text-primary-400 mt-1.5">Sin servicios seleccionados — el profesional aparecerá para todos.</p>
                 )}
               </div>
             )}
@@ -211,10 +243,10 @@ const ProfessionalsView = () => {
         </Modal>
 
         <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Confirmar eliminación" size="sm">
-          <p className="text-primary-600 mb-6">¿Eliminar este profesional? Se perderán sus horarios y datos asociados.</p>
+          <p className="text-primary-600 mb-6">Eliminar este profesional? Se perderán sus horarios y datos asociados.</p>
           <div className="flex justify-end gap-3">
             <button onClick={() => setDeleteConfirm(null)} className="btn-secondary">Cancelar</button>
-            <button onClick={() => handleDelete(deleteConfirm)} className="btn-primary bg-red-500 hover:bg-red-600 border-red-500">Eliminar</button>
+            <button onClick={() => handleDelete(deleteConfirm)} className="btn-danger">Eliminar</button>
           </div>
         </Modal>
       </div>

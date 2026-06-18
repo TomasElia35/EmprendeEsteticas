@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { initialBookings } from '../../data/mockData';
+import Icon from '../../components/ui/Icon';
 
 const ADMIN_LINKS = [
-  { to: '/admin', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', exact: true },
-  { to: '/admin/agenda', label: 'Agenda', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
-  { to: '/admin/servicios', label: 'Servicios', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-  { to: '/admin/personal', label: 'Personal', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z' },
-  { to: '/admin/productos', label: 'Productos', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
-  { to: '/admin/reportes', label: 'Reportes', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
-  { to: '/admin/configuracion', label: 'Configuración', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z' },
+  { to: '/admin', label: 'Agenda', iconName: 'calendar', exact: true },
+  { to: '/admin/servicios', label: 'Servicios', iconName: 'scissors' },
+  { to: '/admin/personal', label: 'Personal', iconName: 'users' },
+  { to: '/admin/productos', label: 'Productos', iconName: 'package' },
+  { to: '/admin/reportes', label: 'Reportes', iconName: 'chart' },
+  { to: '/admin/configuracion', label: 'Configuración', iconName: 'settings' },
 ];
 
 const AdminLayout = ({ children }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Contar solicitudes de cancelación pendientes
@@ -29,57 +30,61 @@ const AdminLayout = ({ children }) => {
     } catch { return 0; }
   })();
 
+  const handleLogout = () => {
+    if (logout) logout();
+    navigate('/');
+  };
+
   return (
-    <div className="flex min-h-[calc(100vh-4rem)]">
+    <div className="flex min-h-screen">
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/40 z-20 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div
+          className="fixed inset-0 bg-black/40 z-20 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
 
       {/* Sidebar */}
       <aside className={`
-        fixed lg:static top-16 left-0 h-[calc(100vh-4rem)] w-56 bg-white border-r border-primary-100 shadow-sm z-30
+        fixed top-0 left-0 h-screen w-64 bg-white border-r border-primary-100 shadow-card z-30
+        flex flex-col
         transform transition-transform duration-200
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        {/* Business info */}
-        <div className="p-4 border-b border-primary-100">
-          <p className="text-xs font-semibold text-primary-400 uppercase tracking-wider mb-1">Tu negocio</p>
-          <p className="font-bold text-secondary text-sm truncate">{user?.businessName || 'Panel Admin'}</p>
+        {/* Logo / Salon name area */}
+        <div className="px-6 py-6 border-b border-primary-100 flex-shrink-0">
+          <p className="text-lg font-bold text-secondary tracking-tight truncate">
+            {user?.businessName || 'Mi Salón'}
+          </p>
+          <p className="text-xs text-primary-400 font-medium mt-0.5 tracking-wide">
+            Panel de Administración
+          </p>
         </div>
 
-        <nav className="p-3 space-y-1">
+        {/* Navigation */}
+        <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+          <p className="section-label px-2 mb-3">Menú principal</p>
           {ADMIN_LINKS.map(link => {
             const active = link.exact
               ? location.pathname === link.to
               : location.pathname.startsWith(link.to) && link.to !== '/admin';
             const isAdminExact = link.exact && location.pathname === '/admin';
-            const showBadge = link.to === '/admin/agenda' && cancelCount > 0;
+            const isActive = active || isAdminExact;
+            const showBadge = link.to === '/admin' && cancelCount > 0;
 
             return (
               <Link
                 key={link.to}
                 to={link.to}
+                id={`nav-${link.label.toLowerCase().replace(/\s/g, '-')}`}
                 onClick={() => setSidebarOpen(false)}
-                className={`relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  active || isAdminExact
-                    ? 'bg-primary-600 text-white shadow-sm'
-                    : 'text-primary-700 hover:bg-primary-50'
-                }`}
+                className={`nav-item ${isActive ? 'nav-item-active' : ''} relative`}
               >
-                <span className="relative">
-                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={link.icon} />
-                  </svg>
-                  {showBadge && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
-                      {cancelCount}
-                    </span>
-                  )}
-                </span>
-                {link.label}
+                <Icon name={link.iconName} className="w-4 h-4 flex-shrink-0" />
+                <span className="flex-1">{link.label}</span>
                 {showBadge && (
-                  <span className="ml-auto bg-red-100 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  <span className="badge badge-danger text-[10px] px-1.5 py-0.5 min-w-[1.25rem] text-center">
                     {cancelCount}
                   </span>
                 )}
@@ -87,20 +92,31 @@ const AdminLayout = ({ children }) => {
             );
           })}
         </nav>
+
+        {/* Bottom: logout */}
+        <div className="px-4 py-4 border-t border-primary-100 flex-shrink-0">
+          <button
+            id="btn-logout"
+            onClick={handleLogout}
+            className="nav-item w-full text-left text-primary-500 hover:text-accent"
+          >
+            <Icon name="log-out" className="w-4 h-4 flex-shrink-0" />
+            <span>Cerrar sesión</span>
+          </button>
+        </div>
       </aside>
 
       {/* Mobile toggle */}
       <button
+        id="btn-sidebar-toggle"
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="fixed bottom-5 left-5 lg:hidden z-40 bg-primary-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center"
+        className="fixed bottom-5 left-5 lg:hidden z-40 bg-primary-700 text-white w-12 h-12 rounded-full shadow-card flex items-center justify-center hover:bg-primary-800 transition-colors"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+        <Icon name="menu" className="w-5 h-5" />
       </button>
 
       {/* Main content */}
-      <main className="flex-1 p-6 overflow-auto bg-primary-50/50 min-w-0">
+      <main className="flex-1 lg:ml-64 p-8 overflow-auto min-w-0 animate-fade-in">
         {children}
       </main>
     </div>

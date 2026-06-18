@@ -4,13 +4,14 @@ import { initialSalons, initialBookings } from '../../data/mockData';
 import AdminLayout from './AdminLayout';
 import CancelRequestsPanel from '../../components/CancelRequestsPanel';
 import { toast } from '../../components/ui/Toast';
+import Icon from '../../components/ui/Icon';
 
 const STATUS_COLORS = {
-  confirmed: 'bg-green-100 border-green-300 text-green-800',
-  pending: 'bg-yellow-100 border-yellow-300 text-yellow-800',
-  cancelled: 'bg-red-100 border-red-300 text-red-700 opacity-60',
-  cancel_requested: 'bg-amber-100 border-amber-300 text-amber-800',
-  completed: 'bg-blue-100 border-blue-300 text-blue-800',
+  confirmed: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+  pending: 'bg-amber-50 border-amber-200 text-amber-800',
+  cancelled: 'bg-primary-50 border-primary-200 text-primary-400 opacity-70',
+  cancel_requested: 'bg-red-50 border-red-200 text-red-700',
+  completed: 'bg-primary-100 border-primary-300 text-primary-800',
 };
 
 const SLOT_HEIGHT = 64; // px per hour
@@ -90,7 +91,7 @@ const AgendaView = () => {
   // Verifica si un slot de 30min está ocupado para un profesional
   const isSlotOccupied = (profId, slotHour, slotMin) => {
     return dayBookings.some(b => {
-      if (b.professionalId !== profId || b.status === 'cancelled') return false;
+      if (b.professionalId !== profId || b.status === 'cancelled' || !b.time?.includes(':')) return false;
       const svc = getService(b.serviceId);
       const bStart = timeToMinutes(b.time);
       const bEnd = bStart + (svc?.duration || 60);
@@ -124,21 +125,21 @@ const AgendaView = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 animate-fade-in">
         {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-secondary">Agenda</h1>
+        <div className="page-header">
+          <h1 className="text-2xl font-bold text-secondary tracking-tight">Agenda</h1>
           <div className="flex flex-wrap gap-3 items-center">
             <input
               type="date"
               value={viewDate}
               onChange={e => setViewDate(e.target.value)}
-              className="border border-primary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+              className="input"
             />
             <select
               value={selectedProfId}
               onChange={e => setSelectedProfId(e.target.value)}
-              className="border border-primary-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+              className="input"
             >
               <option value="all">Todos los profesionales</option>
               {salon?.professionals.map(p => (
@@ -147,13 +148,11 @@ const AgendaView = () => {
             </select>
             <button
               onClick={() => setShowAvailable(v => !v)}
-              className={`flex items-center gap-2 text-sm px-4 py-2 rounded-lg border font-medium transition-colors ${
-                showAvailable
-                  ? 'bg-green-100 border-green-300 text-green-800'
-                  : 'bg-white border-primary-200 text-primary-600 hover:border-primary-400'
+              className={`btn-secondary flex items-center gap-2 ${
+                showAvailable ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : ''
               }`}
             >
-              <span className={`w-2 h-2 rounded-full ${showAvailable ? 'bg-green-500' : 'bg-primary-300'}`} />
+              <span className={`w-2 h-2 rounded-full ${showAvailable ? 'bg-emerald-500' : 'bg-primary-300'}`} />
               {showAvailable ? 'Ocultar disponibles' : 'Ver disponibles'}
             </button>
           </div>
@@ -161,47 +160,58 @@ const AgendaView = () => {
 
         {/* Resumen del día */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: 'Turnos totales', value: dayBookings.filter(b => b.status !== 'cancelled').length, icon: '📅', color: 'bg-indigo-50 border-indigo-100' },
-            { label: 'Confirmados', value: dayBookings.filter(b => b.status === 'confirmed').length, icon: '✅', color: 'bg-green-50 border-green-100' },
-            { label: 'Pendientes', value: dayBookings.filter(b => b.status === 'pending').length, icon: '⏳', color: 'bg-yellow-50 border-yellow-100' },
-            { label: 'Slots disponibles', value: totalAvailableSlots, icon: '🟢', color: 'bg-emerald-50 border-emerald-100' },
-          ].map(item => (
-            <div key={item.label} className={`rounded-xl border ${item.color} px-4 py-3`}>
-              <p className="text-xl font-bold text-secondary">{item.icon} {item.value}</p>
-              <p className="text-xs text-primary-500 mt-0.5">{item.label}</p>
-            </div>
-          ))}
+          <div className="stat-card">
+            <Icon name="calendar" className="w-5 h-5 text-primary-500 mb-1" />
+            <p className="stat-value">{dayBookings.filter(b => b.status !== 'cancelled').length}</p>
+            <p className="stat-label">Turnos totales</p>
+          </div>
+          <div className="stat-card">
+            <Icon name="check-circle" className="w-5 h-5 text-emerald-500 mb-1" />
+            <p className="stat-value">{dayBookings.filter(b => b.status === 'confirmed').length}</p>
+            <p className="stat-label">Confirmados</p>
+          </div>
+          <div className="stat-card">
+            <Icon name="clock" className="w-5 h-5 text-amber-500 mb-1" />
+            <p className="stat-value">{dayBookings.filter(b => b.status === 'pending').length}</p>
+            <p className="stat-label">Pendientes</p>
+          </div>
+          <div className="stat-card">
+            <Icon name="sparkles" className="w-5 h-5 text-primary-400 mb-1" />
+            <p className="stat-value">{totalAvailableSlots}</p>
+            <p className="stat-label">Slots disponibles</p>
+          </div>
         </div>
 
-        {/* Alertas */}
+        {/* Alertas de cancelaciones */}
         <CancelRequestsPanel salon={salon} bookings={salonBookings} onResolve={handleResolveCancelRequest} />
 
+        {/* Señas pendientes de confirmar */}
         {(() => {
           const pendingDeposits = salonBookings.filter(
             b => b.deposit?.paid && !b.deposit?.confirmedByAdmin && b.status !== 'cancelled'
           );
           if (pendingDeposits.length === 0) return null;
           return (
-            <div className="bg-white rounded-2xl border-2 border-yellow-200 shadow-sm p-5 space-y-3">
+            <div className="border-l-4 border-amber-400 bg-white rounded-xl shadow-card px-5 py-4 space-y-3">
               <h3 className="font-bold text-secondary flex items-center gap-2 text-sm">
-                <span className="text-lg">⚠️</span>
+                <Icon name="alert" className="w-4 h-4 text-amber-500 flex-shrink-0" />
                 Señas pendientes de confirmar ({pendingDeposits.length})
               </h3>
               <ul className="space-y-2">
                 {pendingDeposits.map(b => {
                   const svc = getService(b.serviceId);
                   return (
-                    <li key={b.id} className="flex flex-wrap items-center justify-between gap-3 bg-yellow-50 rounded-xl px-4 py-3">
+                    <li key={b.id} className="flex flex-wrap items-center justify-between gap-3 bg-amber-50 rounded-xl px-4 py-3">
                       <div>
                         <p className="font-semibold text-secondary text-sm">{b.clientName}</p>
                         <p className="text-xs text-primary-400">{svc?.name} — {b.date} {b.time}hs · Seña ${b.deposit.amount.toLocaleString('es-AR')}</p>
                       </div>
                       <button
                         onClick={() => handleConfirmDeposit(b.id)}
-                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-colors"
+                        className="btn-secondary text-xs flex items-center gap-1.5"
                       >
-                        ✅ Confirmar recepción
+                        <Icon name="check" className="w-3.5 h-3.5" />
+                        Confirmar recepción
                       </button>
                     </li>
                   );
@@ -212,36 +222,34 @@ const AgendaView = () => {
         })()}
 
         {/* Leyenda */}
-        <div className="flex flex-wrap gap-3 text-xs">
+        <div className="flex flex-wrap gap-3 text-xs items-center">
+          <span className="section-label">Referencias</span>
           {[
-            { color: 'bg-green-100 border-green-300', label: 'Confirmado' },
-            { color: 'bg-yellow-100 border-yellow-300', label: 'Pendiente' },
-            { color: 'bg-blue-100 border-blue-300', label: 'Completado' },
-            { color: 'bg-amber-100 border-amber-300', label: 'Cancelación solicitada' },
-            { color: 'bg-red-100 border-red-300 opacity-60', label: 'Cancelado' },
-            ...(showAvailable ? [{ color: 'bg-emerald-50 border-emerald-200', label: 'Disponible (30 min)' }] : []),
+            { cls: 'badge badge-success', label: 'Confirmado' },
+            { cls: 'badge badge-warning', label: 'Pendiente' },
+            { cls: 'badge badge-neutral', label: 'Completado' },
+            { cls: 'badge badge-danger', label: 'Cancelación solicitada' },
+            { cls: 'badge', label: 'Cancelado' },
+            ...(showAvailable ? [{ cls: 'badge badge-accent', label: 'Disponible (30 min)' }] : []),
           ].map(item => (
-            <div key={item.label} className="flex items-center gap-1.5">
-              <span className={`w-3 h-3 rounded border ${item.color}`} />
-              <span className="text-primary-500">{item.label}</span>
-            </div>
+            <span key={item.label} className={item.cls}>{item.label}</span>
           ))}
         </div>
 
         {/* Timeline multi-columna */}
-        <div className="bg-white rounded-2xl border border-primary-100 shadow-sm overflow-x-auto">
+        <div className="card overflow-x-auto">
           <div
             className="grid"
             style={{ gridTemplateColumns: `64px repeat(${displayedProfs.length}, minmax(160px, 1fr))` }}
           >
             {/* Header: hora vacía + nombre de cada profesional */}
-            <div className="border-r border-primary-100 border-b h-12" />
+            <div className="border-r border-primary-100 border-b h-14" />
             {displayedProfs.map(prof => (
               <div
                 key={prof.id}
-                className="border-r border-b border-primary-100 h-12 flex items-center gap-2 px-3 last:border-r-0"
+                className="border-r border-b border-primary-100 h-14 flex items-center gap-2.5 px-3 last:border-r-0 bg-primary-50/40"
               >
-                <img src={prof.avatar} alt={prof.name} className="w-7 h-7 rounded-full flex-shrink-0" />
+                <img src={prof.avatar} alt={prof.name} className="w-8 h-8 rounded-full flex-shrink-0 object-cover border border-primary-200" />
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-secondary truncate">{prof.name}</p>
                   <p className="text-xs text-primary-400 truncate">{prof.role}</p>
@@ -288,7 +296,7 @@ const AgendaView = () => {
                   })}
 
                   {/* Turnos */}
-                  {profBookings.map(booking => {
+                  {profBookings.filter(b => b.time && b.time.includes(':')).map(booking => {
                     const svc = getService(booking.serviceId);
                     const duration = svc?.duration || 60;
                     const [bh, bm] = booking.time.split(':').map(Number);
@@ -311,9 +319,17 @@ const AgendaView = () => {
                         <p className="truncate opacity-80">{svc?.name}</p>
                         <p className="truncate opacity-60">{duration} min</p>
                         {booking.deposit?.paid && !booking.deposit?.confirmedByAdmin && (
-                          <p className="text-amber-700 font-semibold">⚠️ Seña</p>
+                          <p className="font-semibold flex items-center gap-1 text-amber-700">
+                            <Icon name="alert" className="w-3 h-3" />
+                            Seña
+                          </p>
                         )}
-                        {booking.cancelRequest && <p className="font-semibold">🔔 Cancelación</p>}
+                        {booking.cancelRequest && (
+                          <p className="font-semibold flex items-center gap-1">
+                            <Icon name="x-circle" className="w-3 h-3" />
+                            Cancelación
+                          </p>
+                        )}
                       </div>
                     );
                   })}
@@ -324,7 +340,7 @@ const AgendaView = () => {
         </div>
 
         {displayedProfs.length === 0 && (
-          <div className="text-center py-8 text-primary-400 bg-white rounded-2xl border border-primary-100">
+          <div className="text-center py-10 text-primary-400 bg-white rounded-2xl border border-primary-100">
             Sin profesionales para mostrar
           </div>
         )}

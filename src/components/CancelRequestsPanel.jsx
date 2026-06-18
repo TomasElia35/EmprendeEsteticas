@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Icon from './ui/Icon';
 
 /**
  * CancelRequestsPanel — Panel para admin/empleado.
@@ -21,20 +22,17 @@ const CancelRequestsPanel = ({ salon, bookings, onResolve }) => {
     new Date(iso).toLocaleDateString('es-AR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
   return (
-    <div className="bg-white rounded-2xl border-2 border-amber-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-primary-200 shadow-card overflow-hidden">
       {/* Header clickeable */}
       <button
         id="cancel-requests-panel-toggle"
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-amber-50/50 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-primary-50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-            <span className="absolute -top-1 -right-1 bg-amber-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+          <div className="relative flex-shrink-0">
+            <Icon name="alert" className="w-5 h-5 text-accent" />
+            <span className="absolute -top-1 -right-1 bg-accent text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
               {pending.length}
             </span>
           </div>
@@ -42,26 +40,26 @@ const CancelRequestsPanel = ({ salon, bookings, onResolve }) => {
             <p className="font-bold text-secondary text-sm">
               Solicitudes de cancelación pendientes
             </p>
-            <p className="text-xs text-amber-600">{pending.length} turno{pending.length > 1 ? 's' : ''} esperando resolución</p>
+            <p className="text-xs text-primary-500">
+              {pending.length} turno{pending.length > 1 ? 's' : ''} esperando resolución
+            </p>
           </div>
         </div>
-        <svg
-          className={`w-4 h-4 text-primary-400 transition-transform ${expanded ? 'rotate-180' : ''}`}
-          fill="none" stroke="currentColor" viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-        </svg>
+        <Icon
+          name={expanded ? 'chevron-up' : 'chevron-down'}
+          className="w-4 h-4 text-primary-400"
+        />
       </button>
 
       {expanded && (
-        <ul className="divide-y divide-amber-100">
+        <ul className="divide-y divide-primary-100">
           {pending.map((b) => {
             const service = getService(b.serviceId);
             const prof = getProf(b.professionalId);
             const hasDeposit = b.deposit?.paid;
 
             return (
-              <li key={b.id} className="p-5 space-y-3 bg-amber-50/30">
+              <li key={b.id} className="p-5 space-y-3 bg-primary-50/40">
                 {/* Info del turno */}
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
@@ -70,19 +68,23 @@ const CancelRequestsPanel = ({ salon, bookings, onResolve }) => {
                       {service?.name}{prof ? ` · ${prof.name}` : ''} — {b.date} a las {b.time}hs
                     </p>
                     {b.clientPhone && (
-                      <p className="text-xs text-primary-400 mt-0.5">📞 {b.clientPhone}</p>
+                      <p className="text-xs text-primary-400 mt-0.5 flex items-center gap-1">
+                        <Icon name="phone" className="w-3 h-3" />
+                        {b.clientPhone}
+                      </p>
                     )}
                   </div>
                   {hasDeposit && (
-                    <span className="flex items-center gap-1 bg-amber-100 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-full">
-                      💰 Seña ${b.deposit.amount.toLocaleString('es-AR')}
+                    <span className="badge badge-warning flex items-center gap-1">
+                      <Icon name="dollar" className="w-3 h-3" />
+                      Seña ${b.deposit.amount.toLocaleString('es-AR')}
                     </span>
                   )}
                 </div>
 
                 {/* Motivo de la solicitud */}
                 {b.cancelRequest?.reason && (
-                  <div className="bg-white border border-amber-200 rounded-lg px-3 py-2">
+                  <div className="bg-white border border-primary-100 rounded-xl px-3 py-2">
                     <p className="text-xs text-primary-400 font-medium mb-0.5">Motivo del cliente:</p>
                     <p className="text-sm text-secondary italic">"{b.cancelRequest.reason}"</p>
                   </div>
@@ -98,33 +100,37 @@ const CancelRequestsPanel = ({ salon, bookings, onResolve }) => {
                       <button
                         id={`resolve-cancel-refund-${b.id}`}
                         onClick={() => onResolve(b.id, 'cancel_refund')}
-                        className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-colors"
+                        className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5"
                       >
-                        ✅ Cancelar y devolver seña
+                        <Icon name="check" className="w-3.5 h-3.5" />
+                        Cancelar y devolver seña
                       </button>
                       <button
                         id={`resolve-cancel-no-refund-${b.id}`}
                         onClick={() => onResolve(b.id, 'cancel_no_refund')}
-                        className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
+                        className="btn-danger text-xs py-1.5 px-3 flex items-center gap-1.5"
                       >
-                        ❌ Cancelar sin devolver seña
+                        <Icon name="x" className="w-3.5 h-3.5" />
+                        Cancelar sin devolver seña
                       </button>
                     </>
                   ) : (
                     <button
                       id={`resolve-cancel-${b.id}`}
                       onClick={() => onResolve(b.id, 'cancel_refund')}
-                      className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-colors"
+                      className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5"
                     >
-                      ✅ Confirmar cancelación
+                      <Icon name="check" className="w-3.5 h-3.5" />
+                      Confirmar cancelación
                     </button>
                   )}
                   <button
                     id={`resolve-reject-${b.id}`}
                     onClick={() => onResolve(b.id, 'reject')}
-                    className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                    className="btn-ghost text-xs py-1.5 px-3 flex items-center gap-1.5 border border-primary-200 rounded-xl"
                   >
-                    🟡 Rechazar solicitud (mantener turno)
+                    <Icon name="x-circle" className="w-3.5 h-3.5 text-primary-500" />
+                    Rechazar solicitud (mantener turno)
                   </button>
                 </div>
               </li>

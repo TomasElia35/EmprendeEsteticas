@@ -3,16 +3,19 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { initialSalons, initialBookings } from '../../data/mockData';
 import EmployeeLayout from './EmployeeLayout';
+import Icon from '../../components/ui/Icon';
 
-const StatCard = ({ label, value, sub, color, icon }) => (
-  <div className={`bg-white rounded-2xl border border-primary-100 shadow-sm p-5 flex items-center gap-4`}>
-    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${color}`}>
-      {icon}
-    </div>
-    <div>
-      <p className="text-2xl font-bold text-secondary">{value}</p>
-      <p className="text-sm text-primary-500">{label}</p>
-      {sub && <p className="text-xs text-primary-400 mt-0.5">{sub}</p>}
+const StatCard = ({ label, value, sub, iconName, iconClass }) => (
+  <div className="stat-card">
+    <div className="flex items-center gap-4">
+      <div className="w-11 h-11 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0">
+        <Icon name={iconName} className={`w-5 h-5 ${iconClass}`} />
+      </div>
+      <div>
+        <p className="stat-value">{value}</p>
+        <p className="stat-label">{label}</p>
+        {sub && <p className="stat-sub">{sub}</p>}
+      </div>
     </div>
   </div>
 );
@@ -48,15 +51,17 @@ const EmployeeDashboard = () => {
 
   return (
     <EmployeeLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 animate-fade-in">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-secondary">
-            ¡Hola, {user?.name?.split(' ')[0]}! 👋
-          </h1>
-          <p className="text-primary-500 text-sm mt-1">
-            {salon?.name} · {new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
-          </p>
+        <div className="page-header">
+          <div>
+            <h1 className="text-2xl font-bold text-secondary tracking-tight">
+              Hola, {user?.name?.split(' ')[0]}
+            </h1>
+            <p className="text-primary-500 text-sm mt-1">
+              {salon?.name} · {new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </p>
+          </div>
         </div>
 
         {/* Stats */}
@@ -65,55 +70,63 @@ const EmployeeDashboard = () => {
             label="Turnos del día"
             value={todayBookings.length}
             sub={`${completedToday.length} completados`}
-            color="bg-indigo-50"
-            icon="📅"
+            iconName="calendar"
+            iconClass="text-primary-600"
           />
           <StatCard
             label="Facturación del día"
             value={`$${billedToday.toLocaleString('es-AR')}`}
             sub="Turnos cobrados"
-            color="bg-green-50"
-            icon="💰"
+            iconName="dollar"
+            iconClass="text-accent"
           />
           <StatCard
             label="Pendientes"
             value={pendingToday.length}
             sub="Por atender"
-            color="bg-amber-50"
-            icon="⏳"
+            iconName="clock"
+            iconClass="text-primary-500"
           />
         </div>
 
         {/* Próximos turnos */}
-        <div className="bg-white rounded-2xl border border-primary-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-primary-50">
+        <div className="card">
+          <div className="card-header flex items-center justify-between">
             <h2 className="font-bold text-secondary">Próximos Turnos de Hoy</h2>
-            <Link to="/empleado/agenda" className="text-sm text-indigo-600 hover:underline font-medium">
-              Ver agenda →
+            <Link
+              to="/empleado/agenda"
+              className="text-sm text-primary-600 hover:text-primary-800 font-medium flex items-center gap-1 transition-colors"
+            >
+              Ver agenda
+              <Icon name="arrow-right" className="w-4 h-4" />
             </Link>
           </div>
           {upcomingBookings.length === 0 ? (
-            <p className="text-center text-primary-400 py-10 text-sm">No hay turnos pendientes para hoy.</p>
+            <div className="card-body">
+              <p className="text-center text-primary-400 py-8 text-sm">
+                No hay turnos pendientes para hoy.
+              </p>
+            </div>
           ) : (
-            <ul className="divide-y divide-primary-50">
+            <ul className="divide-y divide-primary-100">
               {upcomingBookings.map((b) => {
                 const service = salon?.services.find((s) => s.id === b.serviceId);
                 const professional = salon?.professionals.find((p) => p.id === b.professionalId);
                 return (
-                  <li key={b.id} className="px-6 py-4 flex items-center justify-between gap-4 hover:bg-gray-50/50">
+                  <li key={b.id} className="px-6 py-4 flex items-center justify-between gap-4 hover:bg-primary-50/60 transition-colors">
                     <div className="flex items-center gap-4">
-                      <div className="text-center w-14">
-                        <p className="font-bold text-secondary">{b.time}</p>
+                      <div className="text-center w-14 flex-shrink-0">
+                        <p className="font-bold text-secondary text-sm">{b.time}</p>
                       </div>
                       <div>
                         <p className="font-semibold text-secondary text-sm">{b.clientName}</p>
                         <p className="text-xs text-primary-400">{service?.name} · {professional?.name}</p>
                       </div>
                     </div>
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                      b.status === 'confirmed' ? 'bg-green-100 text-green-700' :
-                      b.status === 'pending' ? 'bg-amber-100 text-amber-700' :
-                      'bg-gray-100 text-gray-500'
+                    <span className={`badge ${
+                      b.status === 'confirmed' ? 'badge-success' :
+                      b.status === 'pending' ? 'badge-warning' :
+                      'badge-neutral'
                     }`}>
                       {b.status === 'confirmed' ? 'Confirmado' : b.status === 'pending' ? 'Pendiente' : b.status}
                     </span>
@@ -125,21 +138,40 @@ const EmployeeDashboard = () => {
         </div>
 
         {/* Accesos rápidos */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[
-            { to: '/empleado/agenda', label: 'Ir a la Agenda', icon: '📅', color: 'bg-indigo-600 hover:bg-indigo-700' },
-            { to: '/empleado/productos', label: 'Vender Producto', icon: '🛍️', color: 'bg-primary-600 hover:bg-primary-700' },
-            { to: '/empleado/facturacion', label: 'Ver Facturación', icon: '📊', color: 'bg-secondary hover:bg-secondary/90' },
-          ].map((item) => (
+        <div>
+          <p className="section-label mb-3">Accesos rápidos</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Link
-              key={item.to}
-              to={item.to}
-              className={`${item.color} text-white rounded-2xl p-5 flex items-center gap-3 transition-colors shadow-sm`}
+              to="/empleado/agenda"
+              className="card card-body flex items-center gap-3 hover:border-primary-300 transition-colors group"
             >
-              <span className="text-2xl">{item.icon}</span>
-              <span className="font-semibold">{item.label}</span>
+              <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+                <Icon name="calendar" className="w-5 h-5 text-primary-600" />
+              </div>
+              <span className="font-semibold text-secondary">Ir a la Agenda</span>
+              <Icon name="chevron-right" className="w-4 h-4 text-primary-400 ml-auto" />
             </Link>
-          ))}
+            <Link
+              to="/empleado/productos"
+              className="card card-body flex items-center gap-3 hover:border-primary-300 transition-colors group"
+            >
+              <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+                <Icon name="package" className="w-5 h-5 text-primary-600" />
+              </div>
+              <span className="font-semibold text-secondary">Vender Producto</span>
+              <Icon name="chevron-right" className="w-4 h-4 text-primary-400 ml-auto" />
+            </Link>
+            <Link
+              to="/empleado/facturacion"
+              className="card card-body flex items-center gap-3 hover:border-primary-300 transition-colors group"
+            >
+              <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center group-hover:bg-primary-200 transition-colors">
+                <Icon name="chart" className="w-5 h-5 text-primary-600" />
+              </div>
+              <span className="font-semibold text-secondary">Ver Facturación</span>
+              <Icon name="chevron-right" className="w-4 h-4 text-primary-400 ml-auto" />
+            </Link>
+          </div>
         </div>
       </div>
     </EmployeeLayout>

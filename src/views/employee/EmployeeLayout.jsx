@@ -4,48 +4,29 @@ import { useAuth } from '../../context/AuthContext';
 import { toast } from '../../components/ui/Toast';
 import { useNavigate } from 'react-router-dom';
 import { initialBookings } from '../../data/mockData';
+import Icon from '../../components/ui/Icon';
 
 const navItems = [
   {
     to: '/empleado',
     label: 'Dashboard',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-      </svg>
-    ),
+    iconName: 'chart',
     exact: true,
   },
   {
     to: '/empleado/agenda',
     label: 'Agenda',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
-    ),
+    iconName: 'calendar',
   },
   {
     to: '/empleado/productos',
     label: 'Vender Producto',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-      </svg>
-    ),
+    iconName: 'package',
   },
   {
     to: '/empleado/facturacion',
-    label: 'Facturación del Día',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-          d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-      </svg>
-    ),
+    label: 'Facturacion del Dia',
+    iconName: 'receipt',
   },
 ];
 
@@ -67,7 +48,7 @@ const EmployeeLayout = ({ children }) => {
 
   const handleLogout = () => {
     logout();
-    toast.info('Sesión cerrada.');
+    toast.info('Sesion cerrada.');
     navigate('/login');
   };
 
@@ -77,16 +58,16 @@ const EmployeeLayout = ({ children }) => {
       : location.pathname.startsWith(item.to);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-primary-50 flex">
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-primary-100 flex flex-col shadow-sm flex-shrink-0 hidden md:flex">
         {/* Brand */}
         <div className="p-6 border-b border-primary-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center text-white font-bold text-lg shadow">
-              E
+            <div className="w-10 h-10 rounded-xl bg-primary-700 flex items-center justify-center flex-shrink-0">
+              <Icon name="user" className="w-5 h-5 text-white" />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="font-bold text-secondary text-sm">Panel Empleado</p>
               <p className="text-xs text-primary-400 truncate max-w-[120px]">{user?.name}</p>
             </div>
@@ -102,23 +83,22 @@ const EmployeeLayout = ({ children }) => {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                  active
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-primary-500 hover:bg-gray-50 hover:text-secondary'
-                }`}
+                className={`nav-item${active ? ' nav-item-active' : ''} relative`}
               >
-                <span className={`relative ${active ? 'text-indigo-600' : 'text-primary-400'}`}>
-                  {item.icon}
+                <span className="relative flex-shrink-0">
+                  <Icon
+                    name={item.iconName}
+                    className={`w-5 h-5 ${active ? 'text-primary-700' : 'text-primary-400'}`}
+                  />
                   {showBadge && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
+                    <span className="absolute -top-1.5 -right-1.5 bg-accent text-white text-[9px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
                       {cancelCount}
                     </span>
                   )}
                 </span>
-                {item.label}
+                <span className="flex-1">{item.label}</span>
                 {showBadge && (
-                  <span className="ml-auto bg-red-100 text-red-600 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                  <span className="ml-auto badge badge-danger text-[10px] px-1.5 py-0.5">
                     {cancelCount}
                   </span>
                 )}
@@ -131,13 +111,10 @@ const EmployeeLayout = ({ children }) => {
         <div className="p-4 border-t border-primary-100">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm text-red-500 hover:bg-red-50 transition-colors"
+            className="btn-ghost flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm text-primary-600 hover:text-accent hover:bg-primary-50 transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            Cerrar sesión
+            <Icon name="log-out" className="w-4 h-4" />
+            Cerrar sesion
           </button>
         </div>
       </aside>

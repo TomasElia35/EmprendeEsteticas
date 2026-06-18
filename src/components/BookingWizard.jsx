@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { initialBookings } from '../data/mockData';
+import Icon from './ui/Icon';
 
 const BookingWizard = ({ salon, onComplete, onCancel }) => {
   const { user } = useAuth();
@@ -14,6 +15,7 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
     clientName: user?.name || '',
     clientPhone: user?.phone || '',
     clientEmail: user?.email || '',
+    notes: '',
     addRecommendedProduct: false,
   });
 
@@ -66,9 +68,10 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
       clientId: user?.id || null,
       status: 'confirmed',
       discount: null,
-      notes: bookingData.addRecommendedProduct
-        ? `Interesado en producto recomendado`
-        : '',
+      notes: [
+        bookingData.notes || '',
+        bookingData.addRecommendedProduct ? 'Interesado en producto recomendado' : '',
+      ].filter(Boolean).join(' | '),
       payment: null,
       deposit: hasDeposit
         ? { amount: depositConfig.amount, paid: true, confirmedByAdmin: false, refunded: null }
@@ -93,24 +96,32 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
   const STEP_LABELS = ['Servicio', 'Profesional', 'Horario', 'Confirmar'];
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-primary-200 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-modal border border-primary-200 overflow-hidden">
       {/* Wizard Header */}
-      <div className="bg-primary-50 p-6 border-b border-primary-200">
-        <h3 className="text-xl font-bold text-secondary mb-4">Nueva Reserva</h3>
+      <div className="bg-primary-50 px-6 pt-6 pb-5 border-b border-primary-200">
+        <h3 className="text-xl font-bold text-secondary mb-5">Nueva Reserva</h3>
         <div className="flex justify-between relative">
           <div className="absolute top-4 left-0 right-0 h-0.5 bg-primary-200 -z-10" />
           {[1, 2, 3, 4].map((num) => (
-            <div key={num} className="flex flex-col items-center gap-1">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-colors ${
-                step > num
-                  ? 'bg-green-500 border-green-500 text-white'
-                  : step === num
-                  ? 'bg-primary-600 border-primary-600 text-white'
-                  : 'bg-white border-primary-300 text-primary-400'
-              }`}>
-                {step > num ? '✓' : num}
+            <div key={num} className="flex flex-col items-center gap-1.5">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-colors ${
+                  step > num
+                    ? 'bg-emerald-600 border-emerald-600 text-white'
+                    : step === num
+                    ? 'bg-primary-700 border-primary-700 text-white'
+                    : 'bg-white border-primary-200 text-primary-400'
+                }`}
+              >
+                {step > num ? (
+                  <Icon name="check" className="w-4 h-4" />
+                ) : (
+                  num
+                )}
               </div>
-              <span className="text-xs text-primary-500 hidden sm:block">{STEP_LABELS[num - 1]}</span>
+              <span className="text-xs text-primary-500 tracking-wide hidden sm:block">
+                {STEP_LABELS[num - 1]}
+              </span>
             </div>
           ))}
         </div>
@@ -127,15 +138,20 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
                 <div
                   key={srv.id}
                   onClick={() => setBookingData({ ...bookingData, serviceId: srv.id })}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                    bookingData.serviceId === srv.id ? 'border-primary-600 bg-primary-50' : 'border-primary-100 hover:border-primary-300'
-                  } flex justify-between items-center`}
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex justify-between items-center ${
+                    bookingData.serviceId === srv.id
+                      ? 'border-primary-700 bg-primary-50'
+                      : 'border-primary-200 hover:border-primary-500'
+                  }`}
                 >
                   <div>
                     <h5 className="font-semibold text-secondary">{srv.name}</h5>
-                    <p className="text-sm text-primary-600">{srv.duration} min</p>
+                    <p className="text-sm text-primary-500 flex items-center gap-1 mt-0.5">
+                      <Icon name="clock" className="w-3.5 h-3.5" />
+                      {srv.duration} min
+                    </p>
                   </div>
-                  <div className="font-bold text-primary-800">${srv.price.toLocaleString('es-AR')}</div>
+                  <div className="font-bold text-accent">${srv.price.toLocaleString('es-AR')}</div>
                 </div>
               ))}
             </div>
@@ -151,14 +167,16 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
                 <div
                   key={prof.id}
                   onClick={() => setBookingData({ ...bookingData, professionalId: prof.id })}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all flex items-center gap-4 ${
-                    bookingData.professionalId === prof.id ? 'border-primary-600 bg-primary-50' : 'border-primary-100 hover:border-primary-300'
+                  className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-4 ${
+                    bookingData.professionalId === prof.id
+                      ? 'border-primary-700 bg-primary-50'
+                      : 'border-primary-200 hover:border-primary-500'
                   }`}
                 >
                   <img src={prof.avatar} alt={prof.name} className="w-12 h-12 rounded-full shadow-sm" />
                   <div>
                     <h5 className="font-semibold text-secondary">{prof.name}</h5>
-                    <p className="text-xs text-primary-600 uppercase tracking-wider">{prof.role}</p>
+                    <p className="text-xs text-primary-500 uppercase tracking-wider">{prof.role}</p>
                   </div>
                 </div>
               ))}
@@ -173,7 +191,7 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
 
             {/* Date picker */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-primary-700 mb-1">Fecha</label>
+              <label className="label">Fecha</label>
               <input
                 type="date"
                 value={selectedDate}
@@ -182,14 +200,15 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
                   setSelectedDate(e.target.value);
                   setBookingData({ ...bookingData, time: null }); // reset time on date change
                 }}
-                className="border border-primary-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-400 outline-none"
+                className="input w-auto"
               />
             </div>
 
             <p className="text-sm text-primary-600 mb-3">
-              Disponibilidad de <strong>{salon.professionals.find(p => p.id === bookingData.professionalId)?.name}</strong>
+              Disponibilidad de{' '}
+              <strong>{salon.professionals.find((p) => p.id === bookingData.professionalId)?.name}</strong>
               {occupiedSlots.size > 0 && (
-                <span className="ml-2 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                <span className="ml-2 badge badge-warning">
                   {occupiedSlots.size} horario{occupiedSlots.size !== 1 ? 's' : ''} ocupado{occupiedSlots.size !== 1 ? 's' : ''}
                 </span>
               )}
@@ -204,21 +223,18 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
                     key={time}
                     onClick={() => !isOccupied && setBookingData({ ...bookingData, time })}
                     title={isOccupied ? 'Este horario ya está reservado' : ''}
-                    className={`relative py-3 px-2 rounded-lg border-2 text-center font-medium transition-all
-                      ${ isOccupied
-                          ? 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed'
-                          : isSelected
-                          ? 'border-primary-600 bg-primary-600 text-white cursor-pointer'
-                          : 'border-primary-200 hover:border-primary-400 text-secondary cursor-pointer'
-                      }`
-                    }
+                    className={`relative py-3 px-2 rounded-xl border-2 text-center font-medium text-sm transition-all ${
+                      isOccupied
+                        ? 'border-primary-100 bg-primary-50 text-primary-300 cursor-not-allowed'
+                        : isSelected
+                        ? 'border-primary-700 bg-primary-700 text-white cursor-pointer'
+                        : 'border-primary-200 hover:border-primary-600 text-secondary cursor-pointer'
+                    }`}
                   >
                     {time}
                     {isOccupied && (
-                      <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-400 rounded-full flex items-center justify-center">
-                        <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                      <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-primary-300 rounded-full flex items-center justify-center">
+                        <Icon name="x" className="w-2.5 h-2.5 text-white" />
                       </span>
                     )}
                   </div>
@@ -229,13 +245,16 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
             {/* Legend */}
             <div className="flex gap-4 mt-4 text-xs text-primary-400">
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded border-2 border-primary-600 bg-primary-600 inline-block" /> Seleccionado
+                <span className="w-3 h-3 rounded border-2 border-primary-700 bg-primary-700 inline-block" />
+                Seleccionado
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded border-2 border-gray-100 bg-gray-50 inline-block" /> Ocupado
+                <span className="w-3 h-3 rounded border-2 border-primary-100 bg-primary-50 inline-block" />
+                Ocupado
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded border-2 border-primary-200 inline-block" /> Disponible
+                <span className="w-3 h-3 rounded border-2 border-primary-200 inline-block" />
+                Disponible
               </span>
             </div>
           </div>
@@ -248,59 +267,77 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-primary-700 mb-1">Nombre Completo</label>
+                <label className="label">Nombre Completo</label>
                 <input
                   type="text"
                   value={bookingData.clientName}
                   onChange={(e) => setBookingData({ ...bookingData, clientName: e.target.value })}
-                  className="w-full border border-primary-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="input w-full"
                   placeholder="Ej. Ana Pérez"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-primary-700 mb-1">Teléfono</label>
+                <label className="label">Teléfono</label>
                 <input
                   type="tel"
                   value={bookingData.clientPhone}
                   onChange={(e) => setBookingData({ ...bookingData, clientPhone: e.target.value })}
-                  className="w-full border border-primary-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="input w-full"
                   placeholder="Ej. 11 2345 6789"
                 />
               </div>
             </div>
 
             {/* Resumen */}
-            <div className="bg-primary-50 p-4 rounded-lg border border-primary-100">
+            <div className="bg-primary-50 rounded-xl border border-primary-200 p-4">
               <h5 className="font-bold text-secondary mb-3 border-b border-primary-200 pb-2">Resumen de Reserva</h5>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-primary-600">Servicio:</span> <span className="font-medium text-secondary">{selectedService?.name}</span></div>
-                <div className="flex justify-between"><span className="text-primary-600">Profesional:</span> <span className="font-medium text-secondary">{selectedProfessional?.name}</span></div>
-                <div className="flex justify-between"><span className="text-primary-600">Fecha/Hora:</span> <span className="font-medium text-secondary">{new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })}, {bookingData.time}</span></div>
+                <div className="flex justify-between">
+                  <span className="text-primary-500">Servicio:</span>
+                  <span className="font-medium text-secondary">{selectedService?.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-primary-500">Profesional:</span>
+                  <span className="font-medium text-secondary">{selectedProfessional?.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-primary-500">Fecha / Hora:</span>
+                  <span className="font-medium text-secondary">
+                    {new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-AR', {
+                      day: 'numeric',
+                      month: 'long',
+                    })}
+                    , {bookingData.time}
+                  </span>
+                </div>
                 <div className="flex justify-between pt-2 border-t border-primary-200 mt-2">
                   <span className="font-bold text-secondary">Total:</span>
-                  <span className="font-bold text-primary-800">${selectedService?.price.toLocaleString('es-AR')}</span>
+                  <span className="font-bold text-accent">${selectedService?.price.toLocaleString('es-AR')}</span>
                 </div>
               </div>
             </div>
 
             {/* Recommended products */}
             {recommendedProducts.length > 0 && (
-              <div className="border-2 border-amber-200 rounded-xl p-4 bg-amber-50">
+              <div className="bg-primary-50 rounded-xl border border-primary-200 p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-lg">✨</span>
+                  <Icon name="tag" className="w-4 h-4 text-primary-500" />
                   <h5 className="font-bold text-secondary text-sm">Recomendado para tu servicio</h5>
                 </div>
-                <p className="text-xs text-amber-700 mb-3">
+                <p className="text-xs text-primary-500 mb-3">
                   Clientes que reservaron <strong>{selectedService?.name}</strong> también llevaron:
                 </p>
                 <div className="space-y-2">
                   {recommendedProducts.map((prod) => (
-                    <div key={prod.id} className="flex items-center justify-between bg-white rounded-lg p-3 border border-amber-100">
+                    <div
+                      key={prod.id}
+                      className="flex items-center justify-between bg-white rounded-lg p-3 border border-primary-100"
+                    >
                       <div>
                         <p className="font-semibold text-secondary text-sm">{prod.name}</p>
                         <p className="text-xs text-primary-400">{prod.category}</p>
                       </div>
-                      <span className="font-bold text-primary-700 text-sm">${prod.salePrice.toLocaleString('es-AR')}</span>
+                      <span className="font-bold text-accent text-sm">${prod.salePrice.toLocaleString('es-AR')}</span>
                     </div>
                   ))}
                 </div>
@@ -312,19 +349,21 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
                     onChange={(e) => setBookingData({ ...bookingData, addRecommendedProduct: e.target.checked })}
                     className="w-4 h-4 rounded accent-primary-600"
                   />
-                  <span className="text-xs text-secondary font-medium">Quiero consultar sobre estos productos al llegar</span>
+                  <span className="text-xs text-secondary font-medium">
+                    Quiero consultar sobre estos productos al llegar
+                  </span>
                 </label>
               </div>
             )}
 
-            {/* ── SEÑA ─────────────────────────────────────────── */}
+            {/* Seña */}
             {depositConfig?.required && (
-              <div className="border-2 border-amber-300 rounded-xl p-4 bg-amber-50 space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">🔒</span>
+              <div className="bg-amber-50 rounded-xl border border-amber-200 p-4 space-y-3">
+                <div className="flex items-start gap-3">
+                  <Icon name="lock" className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                   <div>
                     <h5 className="font-bold text-secondary text-sm">Seña requerida para confirmar</h5>
-                    <p className="text-xs text-amber-700">
+                    <p className="text-xs text-amber-700 mt-0.5">
                       Este local requiere una seña de{' '}
                       <strong>${depositConfig.amount.toLocaleString('es-AR')}</strong> para reservar.
                     </p>
@@ -334,21 +373,23 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
                 {depositConfig.alias && (
                   <div className="bg-white rounded-lg p-3 border border-amber-200 text-xs space-y-1">
                     <p className="font-semibold text-secondary">Datos de transferencia:</p>
-                    <p className="text-primary-600">📋 Alias: <strong>{depositConfig.alias}</strong></p>
-                    <p className="text-amber-700 font-medium">Monto: ${depositConfig.amount.toLocaleString('es-AR')}</p>
+                    <p className="text-primary-600">
+                      Alias: <strong>{depositConfig.alias}</strong>
+                    </p>
+                    <p className="text-amber-700 font-medium">
+                      Monto: ${depositConfig.amount.toLocaleString('es-AR')}
+                    </p>
                   </div>
                 )}
 
                 {depositConfig.policy && (
-                  <p className="text-xs text-amber-600 italic">
-                    ⚠️ {depositConfig.policy}
-                  </p>
+                  <p className="text-xs text-amber-600 italic">{depositConfig.policy}</p>
                 )}
 
                 <label
                   id="deposit-declared-label"
                   className={`flex items-start gap-3 cursor-pointer p-3 rounded-lg border-2 transition-colors ${
-                    depositDeclared ? 'border-green-400 bg-green-50' : 'border-amber-200 bg-white'
+                    depositDeclared ? 'border-emerald-400 bg-emerald-50' : 'border-amber-200 bg-white'
                   }`}
                 >
                   <input
@@ -356,7 +397,7 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
                     id="deposit-declared-checkbox"
                     checked={depositDeclared}
                     onChange={(e) => setDepositDeclared(e.target.checked)}
-                    className="w-4 h-4 mt-0.5 rounded accent-green-600 flex-shrink-0"
+                    className="w-4 h-4 mt-0.5 rounded accent-emerald-600 flex-shrink-0"
                   />
                   <span className="text-xs text-secondary font-medium leading-relaxed">
                     Declaro que realizaré la transferencia de la seña antes del turno.
@@ -365,8 +406,9 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
                 </label>
 
                 {!depositDeclared && (
-                  <p className="text-xs text-red-500 font-medium">
-                    ⚠️ Debés confirmar la seña para poder reservar.
+                  <p className="text-xs text-red-500 font-medium flex items-center gap-1.5">
+                    <Icon name="alert" className="w-3.5 h-3.5" />
+                    Debés confirmar la seña para poder reservar.
                   </p>
                 )}
               </div>
@@ -376,11 +418,16 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
       </div>
 
       {/* Wizard Footer */}
-      <div className="p-6 border-t border-primary-200 flex justify-between bg-white">
+      <div className="px-6 py-4 border-t border-primary-200 flex justify-between bg-white">
         {step === 1 ? (
-          <button onClick={onCancel} className="btn-secondary">Cancelar</button>
+          <button onClick={onCancel} className="btn-secondary">
+            Cancelar
+          </button>
         ) : (
-          <button onClick={handlePrev} className="btn-secondary">Atrás</button>
+          <button onClick={handlePrev} className="btn-secondary">
+            <Icon name="chevron-left" className="w-4 h-4 mr-1 inline-block" />
+            Atrás
+          </button>
         )}
 
         {step < 4 ? (
@@ -390,14 +437,16 @@ const BookingWizard = ({ salon, onComplete, onCancel }) => {
             className={`btn-primary ${!isStepValid() ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             Siguiente
+            <Icon name="chevron-right" className="w-4 h-4 ml-1 inline-block" />
           </button>
         ) : (
           <button
             id="confirm-booking-btn"
             onClick={handleConfirm}
             disabled={!isStepValid()}
-            className={`btn-primary bg-secondary hover:bg-secondary/90 ${!isStepValid() ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`btn-primary ${!isStepValid() ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
+            <Icon name="check-circle" className="w-4 h-4 mr-1.5 inline-block" />
             Confirmar Reserva
           </button>
         )}

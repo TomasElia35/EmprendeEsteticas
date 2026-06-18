@@ -1,25 +1,32 @@
 import React from 'react';
+import Icon from './Icon';
 
-const StatCard = ({ label, value, sub, icon, color = 'primary' }) => {
-  const colorMap = {
-    primary: 'bg-primary-50 text-primary-700 border-primary-200',
-    green: 'bg-green-50 text-green-700 border-green-200',
-    blue: 'bg-blue-50 text-blue-700 border-blue-200',
-    purple: 'bg-purple-50 text-purple-700 border-purple-200',
-    orange: 'bg-orange-50 text-orange-700 border-orange-200',
-  };
+const colorMap = {
+  primary: 'bg-primary-100 text-primary-700',
+  green:   'bg-primary-100 text-primary-700',
+  blue:    'bg-primary-100 text-primary-600',
+  purple:  'bg-primary-100 text-primary-700',
+  orange:  'bg-primary-100 text-accent',
+};
+
+const StatCard = ({ label, value, sub, icon, iconName, color = 'primary' }) => {
+  const iconBg = colorMap[color] || colorMap.primary;
 
   return (
-    <div className={`rounded-xl border p-5 flex items-center gap-4 ${colorMap[color]}`}>
-      {icon && (
-        <div className="text-3xl w-12 h-12 flex items-center justify-center rounded-lg bg-white/60 shadow-sm">
-          {icon}
+    <div className="stat-card">
+      {(iconName || icon) && (
+        <div className={`w-11 h-11 flex items-center justify-center rounded-xl ${iconBg} shrink-0`}>
+          {iconName ? (
+            <Icon name={iconName} className="w-5 h-5" />
+          ) : (
+            <span className="text-xl leading-none">{icon}</span>
+          )}
         </div>
       )}
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium uppercase tracking-wider opacity-70 truncate">{label}</p>
-        <p className="text-2xl font-bold mt-0.5">{value}</p>
-        {sub && <p className="text-xs opacity-60 mt-0.5">{sub}</p>}
+        <p className="stat-label">{label}</p>
+        <p className="stat-value">{value}</p>
+        {sub && <p className="stat-sub">{sub}</p>}
       </div>
     </div>
   );

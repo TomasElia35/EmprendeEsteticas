@@ -4,6 +4,7 @@ import { mockUsers } from '../../data/mockUsers';
 import SuperAdminLayout from './SuperAdminLayout';
 import Modal from '../../components/ui/Modal';
 import { toast } from '../../components/ui/Toast';
+import Icon from '../../components/ui/Icon';
 
 const CATEGORIES_OPTIONS = ['Peluquería', 'Estética', 'Barbería', 'Spa', 'Uñas', 'Cejas & Pestañas', 'Clínica Estética', 'Otro'];
 
@@ -77,76 +78,107 @@ const BusinessesView = () => {
 
   return (
     <SuperAdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-secondary">Emprendimientos</h1>
-          <button id="super-create-business-btn" onClick={openCreate} className="btn-primary">+ Nuevo emprendimiento</button>
+      <div className="space-y-6 animate-fade-in">
+
+        {/* Page header */}
+        <div className="page-header">
+          <div>
+            <h1 className="text-2xl font-bold text-secondary tracking-tight">Emprendimientos</h1>
+            <p className="text-sm text-primary-500 mt-0.5">{salons.length} negocios registrados en la plataforma</p>
+          </div>
+          <button id="super-create-business-btn" onClick={openCreate} className="btn-primary flex items-center gap-2">
+            <Icon name="plus" className="w-4 h-4" />
+            Nuevo emprendimiento
+          </button>
         </div>
 
+        {/* Business cards list */}
         <div className="space-y-4">
           {salons.map(salon => {
             const assignedAdmin = admins.find(a => a.id === salon.adminId);
             return (
-              <div key={salon.id} className="bg-white rounded-2xl border border-primary-100 shadow-sm overflow-hidden">
-                <div className="flex gap-4 p-5">
-                  <img src={salon.photo} alt={salon.name} className="w-24 h-20 rounded-xl object-cover flex-shrink-0 hidden sm:block" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-3 flex-wrap">
-                      <div>
-                        <h3 className="font-bold text-secondary text-lg">{salon.name}</h3>
-                        <p className="text-sm text-primary-500">{salon.address}</p>
-                        <div className="flex flex-wrap gap-1.5 mt-1.5">
-                          {salon.categories.map(c => (
-                            <span key={c} className="text-xs bg-primary-50 text-primary-700 px-2 py-0.5 rounded-full">{c}</span>
-                          ))}
+              <div key={salon.id} className="card overflow-hidden">
+                <div className="card-body">
+                  <div className="flex gap-5">
+                    <img
+                      src={salon.photo}
+                      alt={salon.name}
+                      className="w-24 h-20 rounded-xl object-cover flex-shrink-0 hidden sm:block border border-primary-100"
+                    />
+                    <div className="flex-1 min-w-0">
+
+                      {/* Top row: name + actions */}
+                      <div className="flex items-start justify-between gap-3 flex-wrap">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-bold text-secondary text-lg leading-tight">{salon.name}</h3>
+                            <span className={`badge ${salon.isActive ? 'badge-success' : 'badge-danger'}`}>
+                              {salon.isActive ? 'Activo' : 'Inactivo'}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <Icon name="map-pin" className="w-3.5 h-3.5 text-primary-400" />
+                            <p className="text-sm text-primary-500">{salon.address}</p>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {salon.categories.map(c => (
+                              <span key={c} className="text-xs bg-primary-50 text-primary-700 border border-primary-200 px-2 py-0.5 rounded-full">{c}</span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <button
+                            onClick={() => toggleActive(salon.id)}
+                            className="btn-ghost text-xs flex items-center gap-1.5"
+                            title={salon.isActive ? 'Desactivar' : 'Activar'}
+                          >
+                            <span className={`status-dot ${salon.isActive ? 'status-dot-green' : 'status-dot-red'}`} />
+                            {salon.isActive ? 'Desactivar' : 'Activar'}
+                          </button>
+                          <button onClick={() => openEdit(salon)} className="btn-secondary text-xs flex items-center gap-1.5 py-1.5 px-3">
+                            <Icon name="edit" className="w-3.5 h-3.5" />
+                            Editar
+                          </button>
+                          <button onClick={() => setDeleteConfirm(salon.id)} className="btn-danger text-xs flex items-center gap-1.5 py-1.5 px-3">
+                            <Icon name="trash" className="w-3.5 h-3.5" />
+                            Eliminar
+                          </button>
                         </div>
                       </div>
-                      <div className="flex gap-2 flex-wrap">
-                        <button
-                          onClick={() => toggleActive(salon.id)}
-                          className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
-                            salon.isActive
-                              ? 'bg-green-100 text-green-700 border-green-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200'
-                              : 'bg-red-100 text-red-700 border-red-200 hover:bg-green-50 hover:text-green-700 hover:border-green-200'
-                          }`}
+
+                      {/* Admin assignment */}
+                      <div className="mt-3 flex items-center gap-3">
+                        <label className="label text-xs flex-shrink-0">Admin asignado:</label>
+                        <select
+                          value={salon.adminId || ''}
+                          onChange={e => assignAdmin(salon.id, e.target.value)}
+                          className="input text-xs py-1.5 px-3 max-w-xs"
                         >
-                          {salon.isActive ? 'Activo' : 'Inactivo'}
-                        </button>
-                        <button onClick={() => openEdit(salon)} className="text-xs btn-secondary py-1.5 px-3">Editar</button>
-                        <button onClick={() => setDeleteConfirm(salon.id)} className="text-xs text-red-500 border border-red-200 px-3 py-1.5 rounded-lg transition-colors hover:bg-red-50">Eliminar</button>
+                          <option value="">Sin asignar</option>
+                          {admins.map(a => (
+                            <option key={a.id} value={a.id}>{a.name} ({a.email})</option>
+                          ))}
+                        </select>
+                        {assignedAdmin && (
+                          <img src={assignedAdmin.avatar} alt={assignedAdmin.name} className="w-6 h-6 rounded-full border border-primary-200" />
+                        )}
                       </div>
-                    </div>
 
-                    {/* Admin assignment */}
-                    <div className="mt-3 flex items-center gap-3">
-                      <label className="text-xs text-primary-500 flex-shrink-0">Admin asignado:</label>
-                      <select
-                        value={salon.adminId || ''}
-                        onChange={e => assignAdmin(salon.id, e.target.value)}
-                        className="text-xs border border-primary-200 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-primary-500 outline-none text-secondary"
-                      >
-                        <option value="">Sin asignar</option>
-                        {admins.map(a => (
-                          <option key={a.id} value={a.id}>{a.name} ({a.email})</option>
+                      {/* Quick stats */}
+                      <div className="grid grid-cols-3 gap-3 mt-3">
+                        {[
+                          { label: 'Servicios', value: salon.services?.length || 0, icon: 'scissors' },
+                          { label: 'Profesionales', value: salon.professionals?.length || 0, icon: 'users' },
+                          { label: 'Turnos/mes', value: salon.monthlyStats?.bookings || 0, icon: 'calendar' },
+                        ].map(stat => (
+                          <div key={stat.label} className="bg-primary-50 rounded-xl px-3 py-2.5 text-center border border-primary-100">
+                            <p className="text-lg font-bold text-secondary">{stat.value}</p>
+                            <p className="text-xs text-primary-500 mt-0.5">{stat.label}</p>
+                          </div>
                         ))}
-                      </select>
-                      {assignedAdmin && (
-                        <img src={assignedAdmin.avatar} alt={assignedAdmin.name} className="w-6 h-6 rounded-full" />
-                      )}
-                    </div>
+                      </div>
 
-                    {/* Quick stats */}
-                    <div className="grid grid-cols-3 gap-3 mt-3">
-                      {[
-                        { label: 'Servicios', value: salon.services?.length || 0 },
-                        { label: 'Profesionales', value: salon.professionals?.length || 0 },
-                        { label: 'Turnos/mes', value: salon.monthlyStats?.bookings || 0 },
-                      ].map(stat => (
-                        <div key={stat.label} className="bg-primary-50 rounded-lg px-3 py-2 text-center">
-                          <p className="text-lg font-bold text-secondary">{stat.value}</p>
-                          <p className="text-xs text-primary-500">{stat.label}</p>
-                        </div>
-                      ))}
                     </div>
                   </div>
                 </div>
@@ -168,23 +200,33 @@ const BusinessesView = () => {
                 { name: 'openHours', label: 'Horario', placeholder: '09:00 - 20:00', id: 'biz-hours' },
               ].map(f => (
                 <div key={f.name}>
-                  <label className="block text-sm font-medium text-primary-700 mb-1">{f.label}</label>
-                  <input id={f.id} name={f.name} value={form[f.name] || ''} onChange={handleChange}
+                  <label className="label">{f.label}</label>
+                  <input
+                    id={f.id}
+                    name={f.name}
+                    value={form[f.name] || ''}
+                    onChange={handleChange}
                     placeholder={f.placeholder}
-                    className="w-full border border-primary-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                    className="input"
+                  />
                 </div>
               ))}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-primary-700 mb-1">Descripción</label>
-              <textarea name="description" value={form.description || ''} onChange={handleChange} rows={3}
-                className="w-full border border-primary-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none resize-none"
-                placeholder="Breve descripción del negocio..." />
+              <label className="label">Descripción</label>
+              <textarea
+                name="description"
+                value={form.description || ''}
+                onChange={handleChange}
+                rows={3}
+                className="input resize-none"
+                placeholder="Breve descripción del negocio..."
+              />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-primary-700 mb-2">Categorías</label>
+              <label className="label mb-2">Categorías</label>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES_OPTIONS.map(cat => (
                   <button
@@ -204,26 +246,39 @@ const BusinessesView = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-primary-700 mb-1">URL Foto (opcional)</label>
-              <input name="photo" value={form.photo || ''} onChange={handleChange}
+              <label className="label">URL Foto (opcional)</label>
+              <input
+                name="photo"
+                value={form.photo || ''}
+                onChange={handleChange}
                 placeholder="https://..."
-                className="w-full border border-primary-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                className="input"
+              />
             </div>
 
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex justify-end gap-3 pt-2 border-t border-primary-100">
               <button onClick={() => setModalOpen(false)} className="btn-secondary">Cancelar</button>
               <button id="biz-save-btn" onClick={handleSave} className="btn-primary">Guardar</button>
             </div>
           </div>
         </Modal>
 
+        {/* Delete confirm modal */}
         <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Confirmar eliminación" size="sm">
-          <p className="text-primary-600 mb-6">¿Eliminar este emprendimiento de la plataforma? Todos sus datos se perderán.</p>
+          <div className="flex items-start gap-3 mb-5">
+            <div className="flex-shrink-0 w-9 h-9 rounded-full bg-red-50 flex items-center justify-center">
+              <Icon name="alert" className="w-5 h-5 text-red-500" />
+            </div>
+            <p className="text-primary-600 text-sm mt-1">
+              Esta acción eliminará el emprendimiento de la plataforma de forma permanente. Todos sus datos, servicios y configuraciones se perderán.
+            </p>
+          </div>
           <div className="flex justify-end gap-3">
             <button onClick={() => setDeleteConfirm(null)} className="btn-secondary">Cancelar</button>
-            <button onClick={() => handleDelete(deleteConfirm)} className="btn-primary bg-red-500 hover:bg-red-600 border-red-500">Eliminar</button>
+            <button onClick={() => handleDelete(deleteConfirm)} className="btn-danger">Eliminar</button>
           </div>
         </Modal>
+
       </div>
     </SuperAdminLayout>
   );

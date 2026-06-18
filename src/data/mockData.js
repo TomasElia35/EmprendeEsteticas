@@ -360,35 +360,97 @@ export const initialBookings = [
 ];
 
 // Suscripciones mock para SuperAdmin
+// Definición de planes — fuente de verdad para precios y features
+export const SUBSCRIPTION_PLANS = {
+  Starter: {
+    name: 'Starter',
+    monthlyPrice: 14900,
+    annualPrice: 149000,
+    maxProfessionals: 2,
+    maxServices: 5,
+    features: [
+      'Hasta 2 profesionales',
+      'Hasta 5 servicios',
+      'Agenda básica',
+      'Soporte por email',
+    ],
+  },
+  Pro: {
+    name: 'Pro',
+    monthlyPrice: 29900,
+    annualPrice: 299000,
+    maxProfessionals: 10,
+    maxServices: 20,
+    features: [
+      'Hasta 10 profesionales',
+      'Hasta 20 servicios',
+      'Agenda avanzada con disponibles',
+      'Facturación y comisiones',
+      'Gestión de productos',
+      'Soporte prioritario',
+    ],
+  },
+  Enterprise: {
+    name: 'Enterprise',
+    monthlyPrice: 59900,
+    annualPrice: 599000,
+    maxProfessionals: null,
+    maxServices: null,
+    features: [
+      'Profesionales ilimitados',
+      'Servicios ilimitados',
+      'Todo lo del plan Pro',
+      'Reportes avanzados',
+      'Acceso API',
+      'Soporte dedicado',
+    ],
+  },
+};
+
 export const initialSubscriptions = [
   {
     id: 'sub-001',
     businessId: 1,
     businessName: "L'Elegance Studio",
     plan: 'Pro',
+    billingCycle: 'monthly',
     status: 'active',
     startDate: '2026-01-01',
     nextBillingDate: '2026-07-01',
     monthlyPrice: 29900,
+    annualPrice: 299000,
+    paymentMethod: 'Mercado Pago',
+    contactEmail: 'admin@elegance.com',
+    notes: '',
   },
   {
     id: 'sub-002',
     businessId: 2,
     businessName: "Gentleman's Club Barber",
     plan: 'Pro',
+    billingCycle: 'annual',
     status: 'active',
     startDate: '2026-02-15',
-    nextBillingDate: '2026-07-15',
+    nextBillingDate: '2027-02-15',
     monthlyPrice: 29900,
+    annualPrice: 299000,
+    paymentMethod: 'Transferencia bancaria',
+    contactEmail: 'admin@gentleman.com',
+    notes: 'Descuento acordado por pago anual anticipado.',
   },
   {
     id: 'sub-003',
     businessId: 3,
     businessName: "Aura Belleza & Spa",
     plan: 'Enterprise',
+    billingCycle: 'monthly',
     status: 'active',
     startDate: '2025-11-01',
     nextBillingDate: '2026-07-01',
     monthlyPrice: 59900,
+    annualPrice: 599000,
+    paymentMethod: 'Mercado Pago',
+    contactEmail: 'admin@aura.com',
+    notes: '',
   },
 ];

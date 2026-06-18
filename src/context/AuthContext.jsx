@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { findUser, findUserById, ROLES } from '../data/mockUsers';
+import { findUser, findUserById, findUserByEmail, ROLES } from '../data/mockUsers';
 
 const AuthContext = createContext(null);
 
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
 
   // Registro de nuevos clientes
   const register = ({ name, email, password, phone }) => {
-    const exists = findUser(email, password);
+    const exists = findUserByEmail(email);
     if (exists) return { success: false, error: 'El email ya está registrado.' };
 
     const newUser = {

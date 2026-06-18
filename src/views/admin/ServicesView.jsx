@@ -4,6 +4,7 @@ import { initialSalons } from '../../data/mockData';
 import AdminLayout from './AdminLayout';
 import Modal from '../../components/ui/Modal';
 import { toast } from '../../components/ui/Toast';
+import Icon from '../../components/ui/Icon';
 
 const CATEGORIES = ['Peluquería', 'Estética', 'Barbería', 'Spa', 'Uñas', 'Otro'];
 
@@ -55,46 +56,62 @@ const ServicesView = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-secondary">Servicios y Precios</h1>
-          <button id="admin-create-service-btn" onClick={openCreate} className="btn-primary">+ Nuevo servicio</button>
+      <div className="space-y-6 animate-fade-in">
+        <div className="page-header">
+          <h1 className="text-2xl font-bold text-secondary tracking-tight">Servicios y Precios</h1>
+          <button id="admin-create-service-btn" onClick={openCreate} className="btn-primary flex items-center gap-2">
+            <Icon name="plus" className="w-4 h-4" />
+            Nuevo servicio
+          </button>
         </div>
 
         {categories.map(cat => (
-          <div key={cat} className="bg-white rounded-2xl border border-primary-100 shadow-sm overflow-hidden">
+          <div key={cat} className="card overflow-hidden">
             <div className="px-6 py-3 bg-primary-50 border-b border-primary-100">
-              <h2 className="font-semibold text-primary-800 text-sm uppercase tracking-wider">{cat}</h2>
+              <span className="section-label">{cat}</span>
             </div>
-            <table className="w-full text-sm">
-              <thead className="border-b border-primary-50">
-                <tr className="text-primary-500 text-xs uppercase tracking-wider">
-                  <th className="text-left px-6 py-3">Nombre</th>
-                  <th className="text-left px-6 py-3 hidden sm:table-cell">Duración</th>
-                  <th className="text-left px-6 py-3">Precio</th>
-                  <th className="text-right px-6 py-3">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-primary-50">
-                {salon?.services.filter(s => s.category === cat).map(svc => (
-                  <tr key={svc.id} className="hover:bg-primary-50/50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-secondary">{svc.name}</td>
-                    <td className="px-6 py-4 text-primary-600 hidden sm:table-cell">{svc.duration} min</td>
-                    <td className="px-6 py-4 font-bold text-primary-700">${svc.price.toLocaleString()}</td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex gap-2 justify-end">
-                        <button onClick={() => openEdit(svc)} className="text-xs text-primary-600 hover:text-primary-900 border border-primary-200 hover:border-primary-400 px-3 py-1.5 rounded-lg transition-colors">
-                          Editar
-                        </button>
-                        <button onClick={() => setDeleteConfirm(svc.id)} className="text-xs text-red-500 hover:text-red-700 border border-red-200 hover:border-red-300 px-3 py-1.5 rounded-lg transition-colors">
-                          Eliminar
-                        </button>
-                      </div>
-                    </td>
+            <div className="table-container">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr>
+                    <th className="table-th">Nombre</th>
+                    <th className="table-th hidden sm:table-cell">Duración</th>
+                    <th className="table-th">Precio</th>
+                    <th className="table-th text-right">Acciones</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-primary-100">
+                  {salon?.services.filter(s => s.category === cat).map(svc => (
+                    <tr key={svc.id} className="hover:bg-primary-50/60 transition-colors">
+                      <td className="table-td font-medium text-secondary">{svc.name}</td>
+                      <td className="table-td text-primary-600 hidden sm:table-cell">
+                        <Icon name="clock" className="w-3.5 h-3.5 inline mr-1 text-primary-400" />
+                        {svc.duration} min
+                      </td>
+                      <td className="table-td font-semibold text-secondary">${svc.price.toLocaleString('es-AR')}</td>
+                      <td className="table-td text-right">
+                        <div className="flex gap-1 justify-end">
+                          <button
+                            onClick={() => openEdit(svc)}
+                            className="btn-ghost flex items-center gap-1.5 text-xs px-2.5 py-1.5"
+                          >
+                            <Icon name="edit" className="w-3.5 h-3.5" />
+                            Editar
+                          </button>
+                          <button
+                            onClick={() => setDeleteConfirm(svc.id)}
+                            className="btn-ghost flex items-center gap-1.5 text-xs px-2.5 py-1.5 text-red-600 hover:text-red-700"
+                          >
+                            <Icon name="trash" className="w-3.5 h-3.5" />
+                            Eliminar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ))}
 
@@ -102,29 +119,49 @@ const ServicesView = () => {
         <Modal isOpen={modalOpen} onClose={closeModal} title={editItem ? 'Editar Servicio' : 'Nuevo Servicio'}>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-primary-700 mb-1">Nombre</label>
-              <input id="svc-name" name="name" value={form.name} onChange={handleChange}
-                className="w-full border border-primary-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none"
-                placeholder="Ej. Corte Clásico" />
+              <label className="label">Nombre</label>
+              <input
+                id="svc-name"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                className="input"
+                placeholder="Ej. Corte Clásico"
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-primary-700 mb-1">Categoría</label>
-                <select name="category" value={form.category} onChange={handleChange}
-                  className="w-full border border-primary-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                <label className="label">Categoría</label>
+                <select name="category" value={form.category} onChange={handleChange} className="input">
                   {CATEGORIES.map(c => <option key={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-primary-700 mb-1">Duración (min)</label>
-                <input id="svc-duration" name="duration" type="number" min="15" step="15" value={form.duration} onChange={handleChange}
-                  className="w-full border border-primary-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+                <label className="label">Duración (min)</label>
+                <input
+                  id="svc-duration"
+                  name="duration"
+                  type="number"
+                  min="15"
+                  step="15"
+                  value={form.duration}
+                  onChange={handleChange}
+                  className="input"
+                />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-primary-700 mb-1">Precio ($)</label>
-              <input id="svc-price" name="price" type="number" min="0" step="100" value={form.price} onChange={handleChange}
-                className="w-full border border-primary-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
+              <label className="label">Precio ($)</label>
+              <input
+                id="svc-price"
+                name="price"
+                type="number"
+                min="0"
+                step="100"
+                value={form.price}
+                onChange={handleChange}
+                className="input"
+              />
             </div>
             <div className="flex justify-end gap-3 pt-2">
               <button onClick={closeModal} className="btn-secondary">Cancelar</button>
@@ -135,10 +172,12 @@ const ServicesView = () => {
 
         {/* Delete confirm Modal */}
         <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Confirmar eliminación" size="sm">
-          <p className="text-primary-600 mb-6">¿Estás seguro de que querés eliminar este servicio? Esta acción no se puede deshacer.</p>
+          <p className="text-primary-600 mb-6">
+            Estas seguro de que queres eliminar este servicio? Esta accion no se puede deshacer.
+          </p>
           <div className="flex justify-end gap-3">
             <button onClick={() => setDeleteConfirm(null)} className="btn-secondary">Cancelar</button>
-            <button onClick={() => handleDelete(deleteConfirm)} className="btn-primary bg-red-500 hover:bg-red-600 border-red-500">Eliminar</button>
+            <button onClick={() => handleDelete(deleteConfirm)} className="btn-danger">Eliminar</button>
           </div>
         </Modal>
       </div>

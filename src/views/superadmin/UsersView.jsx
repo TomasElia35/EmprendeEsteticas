@@ -3,6 +3,7 @@ import { mockUsers, ROLES } from '../../data/mockUsers';
 import { initialSalons } from '../../data/mockData';
 import SuperAdminLayout from './SuperAdminLayout';
 import { toast } from '../../components/ui/Toast';
+import Icon from '../../components/ui/Icon';
 
 const ROLE_LABELS = {
   superadmin: 'Super Admin',
@@ -10,11 +11,12 @@ const ROLE_LABELS = {
   employee: 'Empleado',
   client: 'Cliente',
 };
-const ROLE_COLORS = {
-  superadmin: 'bg-secondary text-white',
-  admin: 'bg-primary-700 text-white',
-  employee: 'bg-indigo-500 text-white',
-  client: 'bg-primary-100 text-primary-800',
+
+const ROLE_BADGE = {
+  superadmin: 'badge badge-neutral',
+  admin: 'badge badge-accent',
+  employee: 'badge badge-info',
+  client: 'badge badge-warning',
 };
 
 const EDITABLE_ROLES = [ROLES.SUPERADMIN, ROLES.ADMIN, ROLES.EMPLOYEE];
@@ -92,27 +94,35 @@ const UsersView = () => {
 
   return (
     <SuperAdminLayout>
-      <div className="space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-secondary">Usuarios del Sistema</h1>
+      <div className="space-y-6 animate-fade-in">
+
+        {/* Page header */}
+        <div className="page-header">
+          <div>
+            <h1 className="text-2xl font-bold text-secondary tracking-tight">Usuarios del Sistema</h1>
+            <p className="text-sm text-primary-500 mt-0.5">{users.length} usuarios registrados</p>
+          </div>
           <button
             id="users-new-btn"
             onClick={openNew}
-            className="btn-primary text-sm"
+            className="btn-primary flex items-center gap-2 text-sm"
           >
-            + Nuevo usuario
+            <Icon name="plus" className="w-4 h-4" />
+            Nuevo usuario
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex flex-wrap gap-2 bg-gray-100 p-1 rounded-xl w-fit">
+        <div className="flex flex-wrap gap-1.5 bg-primary-100 p-1 rounded-xl w-fit border border-primary-200">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               id={`users-tab-${tab.id}`}
               onClick={() => setFilter(tab.id)}
               className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
-                filter === tab.id ? 'bg-white shadow text-secondary' : 'text-gray-500 hover:text-gray-700'
+                filter === tab.id
+                  ? 'bg-white shadow-sm text-secondary border border-primary-200'
+                  : 'text-primary-500 hover:text-primary-700'
               }`}
             >
               {tab.label}
@@ -123,74 +133,84 @@ const UsersView = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: 'Super Admins', value: users.filter((u) => u.role === ROLES.SUPERADMIN).length, color: 'border-secondary/20 bg-secondary/5' },
-            { label: 'Administradores', value: admins.length, color: 'border-primary-200 bg-primary-50' },
-            { label: 'Empleados', value: employees.length, color: 'border-indigo-200 bg-indigo-50' },
-            { label: 'Clientes', value: clients.length, color: 'border-blue-200 bg-blue-50' },
+            { label: 'Super Admins', value: users.filter((u) => u.role === ROLES.SUPERADMIN).length, icon: 'lock' },
+            { label: 'Administradores', value: admins.length, icon: 'briefcase' },
+            { label: 'Empleados', value: employees.length, icon: 'scissors' },
+            { label: 'Clientes', value: clients.length, icon: 'users' },
           ].map((item) => (
-            <div key={item.label} className={`rounded-xl border ${item.color} p-4 text-center`}>
-              <p className="text-2xl font-bold text-secondary">{item.value}</p>
-              <p className="text-xs text-primary-500 mt-1">{item.label}</p>
+            <div key={item.label} className="stat-card">
+              <div className="flex items-center justify-between mb-2">
+                <span className="stat-label">{item.label}</span>
+                <Icon name={item.icon} className="w-4 h-4 text-primary-400" />
+              </div>
+              <p className="stat-value">{item.value}</p>
             </div>
           ))}
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-2xl border border-primary-100 shadow-sm overflow-hidden">
+        <div className="table-container">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-primary-100">
-              <tr className="text-primary-500 text-xs uppercase tracking-wider">
-                <th className="text-left px-6 py-3">Usuario</th>
-                <th className="text-left px-6 py-3 hidden md:table-cell">Contacto</th>
-                <th className="text-left px-6 py-3">Rol</th>
-                <th className="text-left px-6 py-3 hidden lg:table-cell">Negocio</th>
-                <th className="text-center px-6 py-3">Acciones</th>
+            <thead>
+              <tr>
+                <th className="table-th">Usuario</th>
+                <th className="table-th hidden md:table-cell">Contacto</th>
+                <th className="table-th">Rol</th>
+                <th className="table-th hidden lg:table-cell">Negocio</th>
+                <th className="table-th text-center">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-primary-50">
+            <tbody className="divide-y divide-primary-100">
               {displayed.map((u) => {
                 const salon = u.role === ROLES.ADMIN ? getSalon(u.id) : null;
                 const canEdit = EDITABLE_ROLES.includes(u.role);
                 return (
-                  <tr key={u.id} className="hover:bg-gray-50/80 transition-colors">
-                    <td className="px-6 py-4">
+                  <tr key={u.id} className="hover:bg-primary-50/60 transition-colors">
+                    <td className="table-td">
                       <div className="flex items-center gap-3">
-                        <img src={u.avatar} alt={u.name} className="w-9 h-9 rounded-full flex-shrink-0" />
+                        <img src={u.avatar} alt={u.name} className="w-9 h-9 rounded-full flex-shrink-0 border border-primary-100" />
                         <div className="min-w-0">
                           <p className="font-semibold text-secondary truncate">{u.name}</p>
                           <p className="text-xs text-primary-400 truncate">{u.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-primary-500 hidden md:table-cell">{u.phone || '-'}</td>
-                    <td className="px-6 py-4">
-                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${ROLE_COLORS[u.role]}`}>
+                    <td className="table-td text-primary-500 hidden md:table-cell">
+                      {u.phone || <span className="text-primary-300">—</span>}
+                    </td>
+                    <td className="table-td">
+                      <span className={ROLE_BADGE[u.role]}>
                         {ROLE_LABELS[u.role]}
                       </span>
                     </td>
-                    <td className="px-6 py-4 hidden lg:table-cell">
+                    <td className="table-td hidden lg:table-cell">
                       {salon ? (
-                        <span className="text-sm text-secondary font-medium">{salon.name}</span>
+                        <div className="flex items-center gap-1.5">
+                          <Icon name="building" className="w-3.5 h-3.5 text-primary-400" />
+                          <span className="text-sm text-secondary font-medium">{salon.name}</span>
+                        </div>
                       ) : (
-                        <span className="text-xs text-primary-400">—</span>
+                        <span className="text-xs text-primary-300">—</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="table-td text-center">
                       {canEdit ? (
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-1.5">
                           <button
                             id={`edit-user-${u.id}`}
                             onClick={() => openEdit(u)}
-                            className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold border border-indigo-200 hover:border-indigo-400 px-3 py-1.5 rounded-lg transition-colors"
+                            className="btn-ghost flex items-center gap-1.5 text-xs py-1.5 px-2.5"
                           >
+                            <Icon name="edit" className="w-3.5 h-3.5" />
                             Editar
                           </button>
                           {u.role !== ROLES.SUPERADMIN && (
                             <button
                               id={`delete-user-${u.id}`}
                               onClick={() => handleDelete(u.id)}
-                              className="text-xs text-red-500 hover:text-red-700 font-semibold border border-red-200 hover:border-red-400 px-3 py-1.5 rounded-lg transition-colors"
+                              className="btn-ghost text-xs py-1.5 px-2.5 text-red-500 hover:text-red-700 hover:bg-red-50 flex items-center gap-1.5"
                             >
+                              <Icon name="trash" className="w-3.5 h-3.5" />
                               Eliminar
                             </button>
                           )}
@@ -211,49 +231,70 @@ const UsersView = () => {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowModal(false)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
-            <h2 className="text-lg font-bold text-secondary mb-5">
-              {isNew ? 'Nuevo Usuario' : `Editar: ${editingUser?.name}`}
-            </h2>
+          <div className="relative bg-white rounded-3xl shadow-modal w-full max-w-md p-6 animate-fade-in">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-9 h-9 rounded-xl bg-primary-50 border border-primary-200 flex items-center justify-center flex-shrink-0">
+                <Icon name="user" className="w-4 h-4 text-primary-600" />
+              </div>
+              <h2 className="text-lg font-bold text-secondary">
+                {isNew ? 'Nuevo Usuario' : `Editar: ${editingUser?.name}`}
+              </h2>
+            </div>
+
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-primary-600 mb-1">Nombre *</label>
-                <input type="text" value={form.name}
+                <label className="label">Nombre *</label>
+                <input
+                  type="text"
+                  value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400"
-                  placeholder="Nombre completo" />
+                  className="input"
+                  placeholder="Nombre completo"
+                />
               </div>
               <div>
-                <label className="block text-xs font-medium text-primary-600 mb-1">Email *</label>
-                <input type="email" value={form.email}
+                <label className="label">Email *</label>
+                <input
+                  type="email"
+                  value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400"
-                  placeholder="email@ejemplo.com" />
+                  className="input"
+                  placeholder="email@ejemplo.com"
+                />
               </div>
               <div>
-                <label className="block text-xs font-medium text-primary-600 mb-1">Teléfono</label>
-                <input type="tel" value={form.phone}
+                <label className="label">Teléfono</label>
+                <input
+                  type="tel"
+                  value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400"
-                  placeholder="11 2345 6789" />
+                  className="input"
+                  placeholder="11 2345 6789"
+                />
               </div>
               <div>
-                <label className="block text-xs font-medium text-primary-600 mb-1">Rol</label>
-                <select value={form.role}
+                <label className="label">Rol</label>
+                <select
+                  value={form.role}
                   onChange={(e) => setForm({ ...form, role: e.target.value })}
-                  className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400">
+                  className="input"
+                >
                   <option value={ROLES.ADMIN}>Administrador</option>
                   <option value={ROLES.EMPLOYEE}>Empleado</option>
                   <option value={ROLES.SUPERADMIN}>Super Admin</option>
                 </select>
               </div>
               {isNew && (
-                <p className="text-xs text-primary-400 bg-primary-50 p-3 rounded-lg">
-                  La contraseña inicial será <strong>temp1234</strong>. El usuario deberá cambiarla al ingresar.
-                </p>
+                <div className="flex items-start gap-2.5 bg-primary-50 border border-primary-200 p-3 rounded-xl">
+                  <Icon name="info" className="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-primary-600">
+                    La contraseña inicial será <strong>temp1234</strong>. El usuario deberá cambiarla al ingresar.
+                  </p>
+                </div>
               )}
             </div>
-            <div className="flex gap-3 mt-6">
+
+            <div className="flex gap-3 mt-6 pt-4 border-t border-primary-100">
               <button onClick={() => setShowModal(false)} className="flex-1 btn-secondary">Cancelar</button>
               <button id="save-user-btn" onClick={handleSave} className="flex-1 btn-primary">
                 {isNew ? 'Crear usuario' : 'Guardar cambios'}

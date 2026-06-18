@@ -1,33 +1,164 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
 @layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
   body {
     @apply bg-primary-50 text-secondary font-sans antialiased;
+    font-feature-settings: "cv02","cv03","cv04","cv11";
+  }
+
+  h1 { @apply text-2xl font-bold text-secondary tracking-tight; }
+  h2 { @apply text-lg font-semibold text-secondary; }
+  h3 { @apply text-base font-semibold text-secondary; }
+
+  input, select, textarea {
+    @apply font-sans;
   }
 }
 
 @layer components {
+  /* ── Buttons ─────────────────────────────────────────────── */
   .btn-primary {
-    @apply bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 active:scale-95 transition-all shadow-sm cursor-pointer;
+    @apply inline-flex items-center justify-center gap-2
+           bg-primary-700 text-white
+           px-5 py-2.5 rounded-xl font-semibold text-sm
+           hover:bg-primary-800 active:scale-[0.98]
+           transition-all shadow-card cursor-pointer
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1;
   }
   .btn-secondary {
-    @apply bg-white border border-primary-300 text-primary-700 px-4 py-2 rounded-lg font-medium hover:bg-primary-50 active:scale-95 transition-all shadow-sm cursor-pointer;
+    @apply inline-flex items-center justify-center gap-2
+           bg-white border border-primary-200 text-primary-700
+           px-5 py-2.5 rounded-xl font-semibold text-sm
+           hover:bg-primary-50 hover:border-primary-300
+           active:scale-[0.98] transition-all shadow-card cursor-pointer
+           focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-1;
   }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2
+           bg-red-600 text-white
+           px-5 py-2.5 rounded-xl font-semibold text-sm
+           hover:bg-red-700 active:scale-[0.98]
+           transition-all shadow-card cursor-pointer
+           focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           text-primary-600 px-3 py-1.5 rounded-lg text-sm font-medium
+           hover:bg-primary-100 hover:text-secondary transition-colors cursor-pointer;
+  }
+
+  /* ── Form controls ───────────────────────────────────────── */
+  .input {
+    @apply w-full border border-primary-200 rounded-xl px-4 py-2.5
+           text-sm text-secondary bg-white placeholder-primary-300
+           focus:ring-2 focus:ring-primary-400 focus:border-primary-400
+           outline-none transition-colors;
+  }
+  .label {
+    @apply block text-sm font-medium text-primary-700 mb-1.5;
+  }
+
+  /* ── Cards ───────────────────────────────────────────────── */
   .card {
-    @apply bg-white rounded-xl shadow-md border border-primary-100 overflow-hidden;
+    @apply bg-white rounded-2xl border border-primary-100 shadow-card;
+  }
+  .card-header {
+    @apply px-6 py-4 border-b border-primary-100 flex items-center justify-between;
+  }
+  .card-body {
+    @apply px-6 py-5;
+  }
+
+  /* ── Badges ──────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full;
+  }
+  .badge-success  { @apply bg-emerald-50 text-emerald-700 border border-emerald-100; }
+  .badge-warning  { @apply bg-amber-50 text-amber-700 border border-amber-100; }
+  .badge-danger   { @apply bg-red-50 text-red-700 border border-red-100; }
+  .badge-neutral  { @apply bg-primary-100 text-primary-700; }
+  .badge-accent   { @apply bg-accent/10 text-accent; }
+  .badge-info     { @apply bg-blue-50 text-blue-700 border border-blue-100; }
+
+  /* ── Table ───────────────────────────────────────────────── */
+  .table-container {
+    @apply bg-white rounded-2xl border border-primary-100 shadow-card overflow-hidden;
+  }
+  .table-th {
+    @apply text-left px-6 py-3.5 text-xs font-semibold uppercase tracking-widest text-primary-400;
+  }
+  .table-td {
+    @apply px-6 py-4 text-sm text-secondary;
+  }
+
+  /* ── Stat card ───────────────────────────────────────────── */
+  .stat-card {
+    @apply bg-white rounded-2xl border border-primary-100 shadow-card p-6;
+  }
+  .stat-value {
+    @apply text-2xl font-bold text-secondary tracking-tight;
+  }
+  .stat-label {
+    @apply text-sm text-primary-500 mt-1 font-medium;
+  }
+  .stat-sub {
+    @apply text-xs text-primary-400 mt-0.5;
+  }
+
+  /* ── Page wrapper ────────────────────────────────────────── */
+  .page-header {
+    @apply flex flex-wrap items-center justify-between gap-4;
+  }
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-widest text-primary-400;
+  }
+
+  /* ── Status dot ──────────────────────────────────────────── */
+  .status-dot {
+    @apply w-2 h-2 rounded-full flex-shrink-0;
+  }
+  .status-dot-green  { @apply bg-emerald-500; }
+  .status-dot-yellow { @apply bg-amber-400; }
+  .status-dot-red    { @apply bg-red-400; }
+  .status-dot-blue   { @apply bg-blue-400; }
+  .status-dot-gray   { @apply bg-primary-300; }
+
+  /* ── Nav items (layouts) ─────────────────────────────────── */
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+           text-primary-600 hover:bg-primary-100 hover:text-secondary
+           transition-colors cursor-pointer;
+  }
+  .nav-item-active {
+    @apply bg-primary-100 text-secondary font-semibold;
   }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+/* ── Animations ─────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
-.animate-fade-in {
-  animation: fadeIn 0.25s ease-out forwards;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+.animate-fade-in     { animation: fadeInUp 0.22s ease-out forwards; }
+.animate-fade        { animation: fadeIn 0.18s ease-out forwards; }
+.animate-slide-right { animation: slideInRight 0.22s ease-out forwards; }
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { @apply bg-primary-200 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-primary-300; }

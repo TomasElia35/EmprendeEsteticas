@@ -3,6 +3,26 @@ import { useAuth } from '../../context/AuthContext';
 import { initialSalons } from '../../data/mockData';
 import AdminLayout from './AdminLayout';
 import { toast } from '../../components/ui/Toast';
+import Icon from '../../components/ui/Icon';
+
+const ToggleSwitch = ({ id, checked, onChange }) => (
+  <button
+    id={id}
+    type="button"
+    role="switch"
+    aria-checked={checked}
+    onClick={onChange}
+    className={`relative inline-flex w-12 h-6 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 ${
+      checked ? 'bg-primary-600' : 'bg-primary-200'
+    }`}
+  >
+    <span
+      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+        checked ? 'translate-x-6' : 'translate-x-0'
+      }`}
+    />
+  </button>
+);
 
 const BusinessConfigView = () => {
   const { user } = useAuth();
@@ -69,21 +89,23 @@ const BusinessConfigView = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 animate-fade-in">
         <div>
-          <h1 className="text-2xl font-bold text-secondary">Configuración del Local</h1>
+          <h1 className="text-2xl font-bold text-secondary tracking-tight">Configuración del Local</h1>
           <p className="text-primary-500 text-sm mt-1">Personalizá cómo te ven tus clientes</p>
         </div>
 
         {/* Section tabs */}
-        <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit flex-wrap">
+        <div className="flex gap-1 bg-primary-100 p-1 rounded-xl w-fit flex-wrap">
           {sections.map((s) => (
             <button
               key={s.id}
               id={`config-tab-${s.id}`}
               onClick={() => setActiveSection(s.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                activeSection === s.id ? 'bg-white shadow text-secondary' : 'text-gray-500 hover:text-gray-700'
+                activeSection === s.id
+                  ? 'bg-white shadow text-secondary'
+                  : 'text-primary-600 hover:text-secondary'
               }`}
             >
               {s.label}
@@ -93,119 +115,159 @@ const BusinessConfigView = () => {
 
         {/* ── INFO SECTION ─────────────────────────────────────────── */}
         {activeSection === 'info' && (
-          <div className="bg-white rounded-2xl border border-primary-100 shadow-sm p-6 space-y-4">
-            <h2 className="font-bold text-secondary">Información General</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-primary-600 mb-1">Nombre del local</label>
-                <input type="text" value={config.name}
-                  onChange={(e) => setConfig({ ...config, name: e.target.value })}
-                  className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-primary-600 mb-1">Dirección</label>
-                <input type="text" value={config.address}
-                  onChange={(e) => setConfig({ ...config, address: e.target.value })}
-                  className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-primary-600 mb-1">Teléfono</label>
-                <input type="tel" value={config.phone}
-                  onChange={(e) => setConfig({ ...config, phone: e.target.value })}
-                  className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-primary-600 mb-1">Email de contacto</label>
-                <input type="email" value={config.email}
-                  onChange={(e) => setConfig({ ...config, email: e.target.value })}
-                  className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-primary-600 mb-1">Instagram</label>
-                <input type="text" value={config.instagram}
-                  onChange={(e) => setConfig({ ...config, instagram: e.target.value })}
-                  placeholder="@tusalon"
-                  className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-primary-600 mb-1">WhatsApp (código + número)</label>
-                <input type="text" value={config.whatsapp}
-                  onChange={(e) => setConfig({ ...config, whatsapp: e.target.value })}
-                  placeholder="5491122334455"
-                  className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400" />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-primary-600 mb-1">Horario de atención</label>
-                <input type="text" value={config.openHours}
-                  onChange={(e) => setConfig({ ...config, openHours: e.target.value })}
-                  placeholder="09:00 - 20:00"
-                  className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400" />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-primary-600 mb-1">Descripción</label>
-                <textarea value={config.description}
-                  onChange={(e) => setConfig({ ...config, description: e.target.value })}
-                  rows={3}
-                  className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400 resize-none" />
+          <div className="card">
+            <div className="card-header">
+              <div className="flex items-center gap-2">
+                <Icon name="building" className="w-4 h-4 text-primary-500" />
+                <h2 className="font-bold text-secondary">Información General</h2>
               </div>
             </div>
-            <button id="save-info-btn" onClick={handleSaveInfo} className="btn-primary mt-2">
-              Guardar cambios
-            </button>
+            <div className="card-body space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="label">Nombre del local</label>
+                  <input
+                    type="text"
+                    value={config.name}
+                    onChange={(e) => setConfig({ ...config, name: e.target.value })}
+                    className="input"
+                  />
+                </div>
+                <div>
+                  <label className="label">Dirección</label>
+                  <input
+                    type="text"
+                    value={config.address}
+                    onChange={(e) => setConfig({ ...config, address: e.target.value })}
+                    className="input"
+                  />
+                </div>
+                <div>
+                  <label className="label">Teléfono</label>
+                  <input
+                    type="tel"
+                    value={config.phone}
+                    onChange={(e) => setConfig({ ...config, phone: e.target.value })}
+                    className="input"
+                  />
+                </div>
+                <div>
+                  <label className="label">Email de contacto</label>
+                  <input
+                    type="email"
+                    value={config.email}
+                    onChange={(e) => setConfig({ ...config, email: e.target.value })}
+                    className="input"
+                  />
+                </div>
+                <div>
+                  <label className="label">Instagram</label>
+                  <input
+                    type="text"
+                    value={config.instagram}
+                    onChange={(e) => setConfig({ ...config, instagram: e.target.value })}
+                    placeholder="@tusalon"
+                    className="input"
+                  />
+                </div>
+                <div>
+                  <label className="label">WhatsApp (código + número)</label>
+                  <input
+                    type="text"
+                    value={config.whatsapp}
+                    onChange={(e) => setConfig({ ...config, whatsapp: e.target.value })}
+                    placeholder="5491122334455"
+                    className="input"
+                  />
+                </div>
+                <div>
+                  <label className="label">Horario de atención</label>
+                  <input
+                    type="text"
+                    value={config.openHours}
+                    onChange={(e) => setConfig({ ...config, openHours: e.target.value })}
+                    placeholder="09:00 - 20:00"
+                    className="input"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="label">Descripción</label>
+                  <textarea
+                    value={config.description}
+                    onChange={(e) => setConfig({ ...config, description: e.target.value })}
+                    rows={3}
+                    className="input resize-none"
+                  />
+                </div>
+              </div>
+              <button id="save-info-btn" onClick={handleSaveInfo} className="btn-primary mt-2">
+                Guardar cambios
+              </button>
+            </div>
           </div>
         )}
 
         {/* ── APPEARANCE SECTION ───────────────────────────────────── */}
         {activeSection === 'appearance' && (
-          <div className="bg-white rounded-2xl border border-primary-100 shadow-sm p-6 space-y-6">
-            <h2 className="font-bold text-secondary">Apariencia</h2>
-
-            {/* Photo */}
-            <div>
-              <label className="block text-xs font-medium text-primary-600 mb-2">Foto principal</label>
-              <div className="rounded-xl overflow-hidden border border-primary-100 mb-3 h-48">
-                <img
-                  src={originalSalon?.photo}
-                  alt="Foto del local"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  placeholder="URL de la imagen principal..."
-                  className="flex-1 border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400"
-                />
-                <button className="btn-secondary text-sm">Actualizar</button>
+          <div className="card">
+            <div className="card-header">
+              <div className="flex items-center gap-2">
+                <Icon name="sparkles" className="w-4 h-4 text-primary-500" />
+                <h2 className="font-bold text-secondary">Apariencia</h2>
               </div>
             </div>
-
-            {/* Theme color */}
-            <div>
-              <label className="block text-xs font-medium text-primary-600 mb-2">Color del tema</label>
-              <div className="flex items-center gap-4">
-                <input
-                  type="color"
-                  value={config.themeColor}
-                  onChange={(e) => setConfig({ ...config, themeColor: e.target.value })}
-                  className="w-12 h-12 rounded-xl border border-primary-200 cursor-pointer p-1"
-                />
-                <div>
-                  <p className="text-sm font-medium text-secondary">{config.themeColor}</p>
-                  <div
-                    className="mt-1 h-6 w-32 rounded-lg"
-                    style={{ backgroundColor: config.themeColor }}
+            <div className="card-body space-y-6">
+              {/* Photo */}
+              <div>
+                <label className="label">Foto principal</label>
+                <div className="rounded-xl overflow-hidden border border-primary-200 mb-3 h-48">
+                  <img
+                    src={originalSalon?.photo}
+                    alt="Foto del local"
+                    className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="text-xs text-primary-400 max-w-xs">
-                  Este color se usa en botones y elementos destacados en la vista del cliente.
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    placeholder="URL de la imagen principal..."
+                    className="input flex-1"
+                  />
+                  <button className="btn-secondary text-sm">Actualizar</button>
                 </div>
               </div>
-            </div>
 
-            <button id="save-appearance-btn" onClick={() => toast.success('Apariencia actualizada.')} className="btn-primary">
-              Guardar cambios
-            </button>
+              {/* Theme color */}
+              <div>
+                <label className="label">Color del tema</label>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="color"
+                    value={config.themeColor}
+                    onChange={(e) => setConfig({ ...config, themeColor: e.target.value })}
+                    className="w-12 h-12 rounded-xl border border-primary-200 cursor-pointer p-1"
+                  />
+                  <div>
+                    <p className="text-sm font-medium text-secondary">{config.themeColor}</p>
+                    <div
+                      className="mt-1 h-6 w-32 rounded-lg"
+                      style={{ backgroundColor: config.themeColor }}
+                    />
+                  </div>
+                  <p className="text-xs text-primary-400 max-w-xs">
+                    Este color se usa en botones y elementos destacados en la vista del cliente.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                id="save-appearance-btn"
+                onClick={() => toast.success('Apariencia actualizada.')}
+                className="btn-primary"
+              >
+                Guardar cambios
+              </button>
+            </div>
           </div>
         )}
 
@@ -213,63 +275,78 @@ const BusinessConfigView = () => {
         {activeSection === 'promo' && (
           <div className="space-y-4">
             {/* Toggle card */}
-            <div className="bg-white rounded-2xl border border-primary-100 shadow-sm p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="font-bold text-secondary">Modal de Promoción</h2>
-                  <p className="text-xs text-primary-400 mt-0.5">
-                    Aparece automáticamente cuando un cliente visita tu perfil (una vez por sesión)
-                  </p>
+            <div className="card">
+              <div className="card-header">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <Icon name="tag" className="w-4 h-4 text-primary-500" />
+                      <h2 className="font-bold text-secondary">Modal de Promoción</h2>
+                    </div>
+                    <p className="text-xs text-primary-400 mt-0.5">
+                      Aparece automáticamente cuando un cliente visita tu perfil (una vez por sesión)
+                    </p>
+                  </div>
+                  <ToggleSwitch
+                    id="promo-toggle-btn"
+                    checked={promo.active}
+                    onChange={() => setPromo({ ...promo, active: !promo.active })}
+                  />
                 </div>
-                <button
-                  id="promo-toggle-btn"
-                  onClick={() => setPromo({ ...promo, active: !promo.active })}
-                  className={`relative w-12 h-6 rounded-full transition-colors ${
-                    promo.active ? 'bg-green-500' : 'bg-gray-200'
-                  }`}
-                >
-                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                    promo.active ? 'translate-x-6' : 'translate-x-0'
-                  }`} />
-                </button>
               </div>
 
               {promo.active && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-4 border-t border-primary-100">
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-medium text-primary-600 mb-1">Título *</label>
-                    <input type="text" value={promo.title}
-                      onChange={(e) => setPromo({ ...promo, title: e.target.value })}
-                      placeholder="Ej: ¡20% OFF este mes!"
-                      className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400" />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-medium text-primary-600 mb-1">Descripción</label>
-                    <textarea value={promo.description}
-                      onChange={(e) => setPromo({ ...promo, description: e.target.value })}
-                      rows={3}
-                      placeholder="Describí la promo en detalle..."
-                      className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400 resize-none" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-primary-600 mb-1">Texto del botón CTA</label>
-                    <input type="text" value={promo.cta}
-                      onChange={(e) => setPromo({ ...promo, cta: e.target.value })}
-                      placeholder="Ej: Reservar ahora"
-                      className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-primary-600 mb-1">Válido hasta</label>
-                    <input type="date" value={promo.expiresAt}
-                      onChange={(e) => setPromo({ ...promo, expiresAt: e.target.value })}
-                      className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400" />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-medium text-primary-600 mb-1">Imagen (URL opcional)</label>
-                    <input type="text" value={promo.imageUrl}
-                      onChange={(e) => setPromo({ ...promo, imageUrl: e.target.value })}
-                      placeholder="https://..."
-                      className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400" />
+                <div className="card-body">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-primary-100">
+                    <div className="sm:col-span-2">
+                      <label className="label">Título *</label>
+                      <input
+                        type="text"
+                        value={promo.title}
+                        onChange={(e) => setPromo({ ...promo, title: e.target.value })}
+                        placeholder="Ej: 20% OFF este mes!"
+                        className="input"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="label">Descripción</label>
+                      <textarea
+                        value={promo.description}
+                        onChange={(e) => setPromo({ ...promo, description: e.target.value })}
+                        rows={3}
+                        placeholder="Describí la promo en detalle..."
+                        className="input resize-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="label">Texto del botón CTA</label>
+                      <input
+                        type="text"
+                        value={promo.cta}
+                        onChange={(e) => setPromo({ ...promo, cta: e.target.value })}
+                        placeholder="Ej: Reservar ahora"
+                        className="input"
+                      />
+                    </div>
+                    <div>
+                      <label className="label">Válido hasta</label>
+                      <input
+                        type="date"
+                        value={promo.expiresAt}
+                        onChange={(e) => setPromo({ ...promo, expiresAt: e.target.value })}
+                        className="input"
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="label">Imagen (URL opcional)</label>
+                      <input
+                        type="text"
+                        value={promo.imageUrl}
+                        onChange={(e) => setPromo({ ...promo, imageUrl: e.target.value })}
+                        placeholder="https://..."
+                        className="input"
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -277,28 +354,32 @@ const BusinessConfigView = () => {
 
             {/* Preview */}
             {promo.active && promo.title && (
-              <div className="bg-white rounded-2xl border border-primary-100 shadow-sm p-6">
-                <h3 className="text-xs font-semibold text-primary-400 uppercase tracking-wider mb-4">Preview del modal</h3>
-                <div className="max-w-xs mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-primary-100">
-                  {promo.imageUrl ? (
-                    <img src={promo.imageUrl} alt="" className="w-full h-32 object-cover" />
-                  ) : (
-                    <div className="h-20 bg-gradient-to-br from-primary-600 to-secondary flex items-center justify-center">
-                      <span className="text-3xl">🎉</span>
-                    </div>
-                  )}
-                  <div className="p-4">
-                    <span className="inline-block bg-primary-50 text-primary-700 text-xs font-semibold px-2 py-0.5 rounded-full mb-2">Promoción activa</span>
-                    <p className="font-bold text-secondary text-sm">{promo.title}</p>
-                    <p className="text-primary-500 text-xs mt-1">{promo.description}</p>
-                    {promo.expiresAt && (
-                      <p className="text-xs text-primary-400 mt-1">
-                        Hasta: {new Date(promo.expiresAt).toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })}
-                      </p>
+              <div className="card">
+                <div className="card-header">
+                  <span className="section-label">Preview del modal</span>
+                </div>
+                <div className="card-body">
+                  <div className="max-w-xs mx-auto bg-white rounded-3xl shadow-modal overflow-hidden border border-primary-100">
+                    {promo.imageUrl ? (
+                      <img src={promo.imageUrl} alt="" className="w-full h-32 object-cover" />
+                    ) : (
+                      <div className="h-20 bg-gradient-to-br from-primary-600 to-secondary flex items-center justify-center">
+                        <Icon name="sparkles" className="w-8 h-8 text-primary-200" />
+                      </div>
                     )}
-                    <button className="mt-3 w-full bg-primary-600 text-white text-xs font-semibold py-2 rounded-xl">
-                      {promo.cta || 'Reservar ahora'}
-                    </button>
+                    <div className="p-4">
+                      <span className="badge badge-accent mb-2 inline-block">Promoción activa</span>
+                      <p className="font-bold text-secondary text-sm">{promo.title}</p>
+                      <p className="text-primary-500 text-xs mt-1">{promo.description}</p>
+                      {promo.expiresAt && (
+                        <p className="text-xs text-primary-400 mt-1">
+                          Hasta: {new Date(promo.expiresAt).toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })}
+                        </p>
+                      )}
+                      <button className="mt-3 w-full bg-primary-600 text-white text-xs font-semibold py-2 rounded-xl">
+                        {promo.cta || 'Reservar ahora'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -312,120 +393,117 @@ const BusinessConfigView = () => {
 
         {/* ── POLICY SECTION ───────────────────────────────────── */}
         {activeSection === 'policy' && (
-          <div className="bg-white rounded-2xl border border-primary-100 shadow-sm p-6 space-y-6">
-            <div>
-              <h2 className="font-bold text-secondary">Política de Turnos y Señas</h2>
-              <p className="text-xs text-primary-400 mt-0.5">
-                Configurá si requerís un depósito para confirmar reservas y cómo manejar las cancelaciones.
-              </p>
-            </div>
-
-            {/* Toggle seña requerida */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-              <div>
-                <p className="font-semibold text-secondary text-sm">¿Requerir seña para confirmar turnos?</p>
-                <p className="text-xs text-primary-400 mt-0.5">
-                  Si está activo, el cliente debe declarar que transferirá la seña al reservar.
-                </p>
+          <div className="card">
+            <div className="card-header">
+              <div className="flex items-center gap-2">
+                <Icon name="receipt" className="w-4 h-4 text-primary-500" />
+                <div>
+                  <h2 className="font-bold text-secondary">Política de Turnos y Señas</h2>
+                  <p className="text-xs text-primary-400 mt-0.5">
+                    Configurá si requerís un depósito para confirmar reservas y cómo manejar las cancelaciones.
+                  </p>
+                </div>
               </div>
-              <button
-                id="deposit-required-toggle"
-                onClick={() => setDepositConfig({ ...depositConfig, required: !depositConfig.required })}
-                className={`relative w-12 h-6 rounded-full transition-colors ${
-                  depositConfig.required ? 'bg-green-500' : 'bg-gray-200'
-                }`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                  depositConfig.required ? 'translate-x-6' : 'translate-x-0'
-                }`} />
+            </div>
+            <div className="card-body space-y-6">
+              {/* Toggle seña requerida */}
+              <div className="flex items-center justify-between p-4 bg-primary-50 rounded-xl border border-primary-100">
+                <div>
+                  <p className="font-semibold text-secondary text-sm">Requerir seña para confirmar turnos</p>
+                  <p className="text-xs text-primary-400 mt-0.5">
+                    Si está activo, el cliente debe declarar que transferirá la seña al reservar.
+                  </p>
+                </div>
+                <ToggleSwitch
+                  id="deposit-required-toggle"
+                  checked={depositConfig.required}
+                  onChange={() => setDepositConfig({ ...depositConfig, required: !depositConfig.required })}
+                />
+              </div>
+
+              {depositConfig.required && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                  <div>
+                    <label className="label">Monto de la seña ($)</label>
+                    <input
+                      id="deposit-amount-input"
+                      type="number"
+                      min="0"
+                      value={depositConfig.amount}
+                      onChange={(e) => setDepositConfig({ ...depositConfig, amount: parseFloat(e.target.value) || 0 })}
+                      className="input"
+                      placeholder="Ej: 5000"
+                    />
+                  </div>
+                  <div>
+                    <label className="label">Alias de transferencia</label>
+                    <input
+                      id="deposit-alias-input"
+                      type="text"
+                      value={depositConfig.alias}
+                      onChange={(e) => setDepositConfig({ ...depositConfig, alias: e.target.value })}
+                      className="input"
+                      placeholder="Ej: misalon.cba"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="label">Link de MercadoPago (opcional)</label>
+                    <input
+                      id="deposit-mp-input"
+                      type="url"
+                      value={depositConfig.mpLink}
+                      onChange={(e) => setDepositConfig({ ...depositConfig, mpLink: e.target.value })}
+                      className="input"
+                      placeholder="https://mpago.la/..."
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="label">Política de cancelación con seña</label>
+                    <textarea
+                      id="deposit-policy-input"
+                      value={depositConfig.policy}
+                      onChange={(e) => setDepositConfig({ ...depositConfig, policy: e.target.value })}
+                      rows={2}
+                      className="input resize-none"
+                      placeholder="Ej: La seña no es reembolsable si se cancela con menos de 24hs..."
+                    />
+                    <p className="text-xs text-primary-400 mt-1">Este texto se muestra al cliente al momento de reservar.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Toggle cancelación directa sin seña */}
+              <div className="flex items-center justify-between p-4 bg-primary-50 rounded-xl border border-primary-100">
+                <div>
+                  <p className="font-semibold text-secondary text-sm">Permitir cancelación directa sin seña (con +24hs)</p>
+                  <p className="text-xs text-primary-400 mt-0.5">
+                    Si está activo, los turnos sin seña pueden cancelarse automáticamente con más de 24hs de anticipación.
+                  </p>
+                </div>
+                <ToggleSwitch
+                  id="allow-direct-cancel-toggle"
+                  checked={depositConfig.allowDirectCancelWithout}
+                  onChange={() => setDepositConfig({ ...depositConfig, allowDirectCancelWithout: !depositConfig.allowDirectCancelWithout })}
+                />
+              </div>
+
+              {/* Info box */}
+              <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 text-xs text-primary-700">
+                <div className="flex items-center gap-1.5 font-semibold mb-2">
+                  <Icon name="info" className="w-4 h-4 text-primary-500" />
+                  <span>Como funciona el flujo</span>
+                </div>
+                <ul className="space-y-1 list-disc list-inside text-primary-600">
+                  <li>Con seña: el cliente debe contactar al local por WhatsApp para cancelar. También puede solicitar la cancelación desde la app y vos decidís si devolver o no la seña.</li>
+                  <li>Sin seña (con +24hs): el cliente cancela directamente si está habilitado arriba.</li>
+                  <li>Las solicitudes de cancelación aparecen en tu Agenda con un badge de notificación rojo.</li>
+                </ul>
+              </div>
+
+              <button id="save-policy-btn" onClick={handleSaveDepositConfig} className="btn-primary">
+                Guardar política de turnos
               </button>
             </div>
-
-            {depositConfig.required && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <div>
-                  <label className="block text-xs font-medium text-primary-600 mb-1">Monto de la seña ($)</label>
-                  <input
-                    id="deposit-amount-input"
-                    type="number"
-                    min="0"
-                    value={depositConfig.amount}
-                    onChange={(e) => setDepositConfig({ ...depositConfig, amount: parseFloat(e.target.value) || 0 })}
-                    className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400"
-                    placeholder="Ej: 5000"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-primary-600 mb-1">Alias de transferencia</label>
-                  <input
-                    id="deposit-alias-input"
-                    type="text"
-                    value={depositConfig.alias}
-                    onChange={(e) => setDepositConfig({ ...depositConfig, alias: e.target.value })}
-                    className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400"
-                    placeholder="Ej: misalon.cba"
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-primary-600 mb-1">Link de MercadoPago (opcional)</label>
-                  <input
-                    id="deposit-mp-input"
-                    type="url"
-                    value={depositConfig.mpLink}
-                    onChange={(e) => setDepositConfig({ ...depositConfig, mpLink: e.target.value })}
-                    className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400"
-                    placeholder="https://mpago.la/..."
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-medium text-primary-600 mb-1">Política de cancelación con seña</label>
-                  <textarea
-                    id="deposit-policy-input"
-                    value={depositConfig.policy}
-                    onChange={(e) => setDepositConfig({ ...depositConfig, policy: e.target.value })}
-                    rows={2}
-                    className="w-full border border-primary-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-400 resize-none"
-                    placeholder="Ej: La seña no es reembolsable si se cancela con menos de 24hs..."
-                  />
-                  <p className="text-xs text-primary-400 mt-1">Este texto se muestra al cliente al momento de reservar.</p>
-                </div>
-              </div>
-            )}
-
-            {/* Toggle cancelación directa sin seña */}
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-              <div>
-                <p className="font-semibold text-secondary text-sm">Permitir cancelación directa sin seña (con +24hs)</p>
-                <p className="text-xs text-primary-400 mt-0.5">
-                  Si está activo, los turnos sin seña pueden cancelarse automáticamente con más de 24hs de anticipación.
-                </p>
-              </div>
-              <button
-                id="allow-direct-cancel-toggle"
-                onClick={() => setDepositConfig({ ...depositConfig, allowDirectCancelWithout: !depositConfig.allowDirectCancelWithout })}
-                className={`relative w-12 h-6 rounded-full transition-colors ${
-                  depositConfig.allowDirectCancelWithout ? 'bg-green-500' : 'bg-gray-200'
-                }`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                  depositConfig.allowDirectCancelWithout ? 'translate-x-6' : 'translate-x-0'
-                }`} />
-              </button>
-            </div>
-
-            {/* Info box */}
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-xs text-blue-700">
-              <p className="font-semibold mb-1">💡 ¿Cómo funciona el flujo?</p>
-              <ul className="space-y-1 list-disc list-inside">
-                <li>Con seña: el cliente debe contactar al local por WhatsApp para cancelar. También puede solicitar la cancelación desde la app y vos decidís si devolver o no la seña.</li>
-                <li>Sin seña (con +24hs): el cliente cancela directamente si está habilitado arriba.</li>
-                <li>Las solicitudes de cancelación aparecen en tu Agenda con un badge de notificación rojo.</li>
-              </ul>
-            </div>
-
-            <button id="save-policy-btn" onClick={handleSaveDepositConfig} className="btn-primary">
-              Guardar política de turnos
-            </button>
           </div>
         )}
       </div>
