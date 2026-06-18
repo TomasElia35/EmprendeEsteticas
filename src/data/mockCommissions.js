@@ -79,3 +79,29 @@ export const getDailyBillingSummary = (businessId, date, bookings, professionals
 
   return { totalBilled, byProfessional, completedBookings: dayBookings };
 };
+
+/**
+ * Obtiene el resumen de facturación para un rango de fechas.
+ */
+export const getRangeBillingSummary = (businessId, fromDate, toDate, bookings, professionals, services) => {
+  const rangeBookings = bookings.filter(
+    (b) => b.salonId === businessId && b.date >= fromDate && b.date <= toDate && b.status === 'completed' && b.payment
+  );
+
+  const totalBilled = rangeBookings.reduce((sum, b) => sum + (b.payment?.amount || 0), 0);
+
+  const byProfessional = professionals.map((prof) => {
+    const profBookings = rangeBookings.filter((b) => b.professionalId === prof.id);
+    const profTotal = profBookings.reduce((sum, b) => sum + (b.payment?.amount || 0), 0);
+    const commissionAmounts = profBookings.map(b => {
+      const svc = services.find(s => s.id === b.serviceId);
+      const { amount } = calculateCommission(b.payment?.amount || 0, prof, svc?.id);
+      return amount;
+    });
+    const commissionAmount = commissionAmounts.reduce((s, a) => s + a, 0);
+    const percent = prof.commission;
+    return { professional: prof, bookingsCount: profBookings.length, totalBilled: profTotal, commissionPercent: percent, commissionAmount };
+  }).filter((p) => p.bookingsCount > 0);
+
+  return { totalBilled, byProfessional, completedBookings: rangeBookings };
+};

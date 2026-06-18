@@ -300,6 +300,7 @@ const EmployeeAgendaView = () => {
                         <p className="font-semibold text-secondary">{b.clientName}</p>
                         <p className="text-xs text-primary-400 mt-0.5">
                           {service?.name}
+                          {service?.duration ? ` · ${service.duration} min` : ''}
                           {professional ? ` · ${professional.name}` : ''}
                           {hasDiscount && (
                             <span className="ml-2 text-red-500">

@@ -10,6 +10,25 @@ const STATUS_COLORS = {
   pending: 'bg-yellow-100 border-yellow-300 text-yellow-800',
   cancelled: 'bg-red-100 border-red-300 text-red-700 opacity-60',
   cancel_requested: 'bg-amber-100 border-amber-300 text-amber-800',
+  completed: 'bg-blue-100 border-blue-300 text-blue-800',
+};
+
+const SLOT_HEIGHT = 64; // px per hour
+const START_HOUR = 9;
+const END_HOUR = 19;
+const HOURS = Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, i) =>
+  `${String(START_HOUR + i).padStart(2, '0')}:00`
+);
+
+const addMinutes = (time, mins) => {
+  const [h, m] = time.split(':').map(Number);
+  const total = h * 60 + m + mins;
+  return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+};
+
+const timeToMinutes = (time) => {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
 };
 
 const AgendaView = () => {
@@ -24,14 +43,9 @@ const AgendaView = () => {
   const today = new Date();
   const [selectedProfId, setSelectedProfId] = useState('all');
   const [viewDate, setViewDate] = useState(today.toISOString().split('T')[0]);
+  const [showAvailable, setShowAvailable] = useState(false);
 
   const salonBookings = bookings.filter(b => b.salonId === salon?.id);
-
-  const filteredBookings = salonBookings.filter(b => {
-    const matchDate = b.date === viewDate;
-    const matchProf = selectedProfId === 'all' || b.professionalId === Number(selectedProfId);
-    return matchDate && matchProf;
-  });
 
   const getService = (sid) => salon?.services.find(s => s.id === sid);
   const getProf = (pid) => salon?.professionals.find(p => p.id === pid);
@@ -41,7 +55,6 @@ const AgendaView = () => {
     localStorage.setItem('estetica_bookings', JSON.stringify(newOnes));
   };
 
-  // Confirmar seña recibida por el admin
   const handleConfirmDeposit = (bookingId) => {
     const updated = bookings.map(b =>
       b.id === bookingId && b.deposit
@@ -53,41 +66,69 @@ const AgendaView = () => {
     toast.success('Seña confirmada correctamente.');
   };
 
-  // Resolver solicitud de cancelación: cancel_refund | cancel_no_refund | reject
   const handleResolveCancelRequest = (bookingId, action) => {
     const updated = bookings.map(b => {
       if (b.id !== bookingId) return b;
-      if (action === 'reject') {
-        return { ...b, cancelRequest: null };
-      }
+      if (action === 'reject') return { ...b, cancelRequest: null };
       const refunded = action === 'cancel_refund';
-      return {
-        ...b,
-        status: 'cancelled',
-        cancelRequest: null,
-        deposit: b.deposit ? { ...b.deposit, refunded } : null,
-      };
+      return { ...b, status: 'cancelled', cancelRequest: null, deposit: b.deposit ? { ...b.deposit, refunded } : null };
     });
     setBookings(updated);
     persistBookings(updated);
-    if (action === 'reject') {
-      toast.info('Solicitud rechazada. El turno sigue activo.');
-    } else {
-      const msg = action === 'cancel_refund'
-        ? 'Turno cancelado. Se devolverá la seña al cliente.'
-        : 'Turno cancelado. La seña no será devuelta.';
-      toast.success(msg);
-    }
+    if (action === 'reject') toast.info('Solicitud rechazada. El turno sigue activo.');
+    else toast.success(action === 'cancel_refund' ? 'Turno cancelado. Se devolverá la seña.' : 'Turno cancelado sin devolución.');
   };
 
-  const hours = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'];
+  // Profesionales a mostrar en las columnas
+  const displayedProfs = selectedProfId === 'all'
+    ? (salon?.professionals || [])
+    : (salon?.professionals || []).filter(p => p.id === Number(selectedProfId));
+
+  // Bookings del día filtrados
+  const dayBookings = salonBookings.filter(b => b.date === viewDate);
+
+  // Verifica si un slot de 30min está ocupado para un profesional
+  const isSlotOccupied = (profId, slotHour, slotMin) => {
+    return dayBookings.some(b => {
+      if (b.professionalId !== profId || b.status === 'cancelled') return false;
+      const svc = getService(b.serviceId);
+      const bStart = timeToMinutes(b.time);
+      const bEnd = bStart + (svc?.duration || 60);
+      const sStart = slotHour * 60 + slotMin;
+      const sEnd = sStart + 30;
+      return sStart < bEnd && sEnd > bStart;
+    });
+  };
+
+  // Genera todos los slots disponibles de 30 min para un profesional
+  const getAvailableSlots = (profId) => {
+    const slots = [];
+    for (let h = START_HOUR; h < END_HOUR; h++) {
+      for (let m = 0; m < 60; m += 30) {
+        if (!isSlotOccupied(profId, h, m)) {
+          slots.push({ hour: h, min: m });
+        }
+      }
+    }
+    return slots;
+  };
+
+  // Bookings de un profesional en el día
+  const getProfBookings = (profId) =>
+    dayBookings.filter(b => b.professionalId === profId);
+
+  // Conteo de slots disponibles totales
+  const totalAvailableSlots = displayedProfs.reduce(
+    (sum, p) => sum + getAvailableSlots(p.id).length, 0
+  );
 
   return (
     <AdminLayout>
       <div className="space-y-6">
+        {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h1 className="text-2xl font-bold text-secondary">Agenda</h1>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3 items-center">
             <input
               type="date"
               value={viewDate}
@@ -104,17 +145,38 @@ const AgendaView = () => {
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}
             </select>
+            <button
+              onClick={() => setShowAvailable(v => !v)}
+              className={`flex items-center gap-2 text-sm px-4 py-2 rounded-lg border font-medium transition-colors ${
+                showAvailable
+                  ? 'bg-green-100 border-green-300 text-green-800'
+                  : 'bg-white border-primary-200 text-primary-600 hover:border-primary-400'
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full ${showAvailable ? 'bg-green-500' : 'bg-primary-300'}`} />
+              {showAvailable ? 'Ocultar disponibles' : 'Ver disponibles'}
+            </button>
           </div>
         </div>
 
-        {/* Panel de solicitudes de cancelación */}
-        <CancelRequestsPanel
-          salon={salon}
-          bookings={salonBookings}
-          onResolve={handleResolveCancelRequest}
-        />
+        {/* Resumen del día */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { label: 'Turnos totales', value: dayBookings.filter(b => b.status !== 'cancelled').length, icon: '📅', color: 'bg-indigo-50 border-indigo-100' },
+            { label: 'Confirmados', value: dayBookings.filter(b => b.status === 'confirmed').length, icon: '✅', color: 'bg-green-50 border-green-100' },
+            { label: 'Pendientes', value: dayBookings.filter(b => b.status === 'pending').length, icon: '⏳', color: 'bg-yellow-50 border-yellow-100' },
+            { label: 'Slots disponibles', value: totalAvailableSlots, icon: '🟢', color: 'bg-emerald-50 border-emerald-100' },
+          ].map(item => (
+            <div key={item.label} className={`rounded-xl border ${item.color} px-4 py-3`}>
+              <p className="text-xl font-bold text-secondary">{item.icon} {item.value}</p>
+              <p className="text-xs text-primary-500 mt-0.5">{item.label}</p>
+            </div>
+          ))}
+        </div>
 
-        {/* Señas pendientes de confirmar */}
+        {/* Alertas */}
+        <CancelRequestsPanel salon={salon} bookings={salonBookings} onResolve={handleResolveCancelRequest} />
+
         {(() => {
           const pendingDeposits = salonBookings.filter(
             b => b.deposit?.paid && !b.deposit?.confirmedByAdmin && b.status !== 'cancelled'
@@ -136,7 +198,6 @@ const AgendaView = () => {
                         <p className="text-xs text-primary-400">{svc?.name} — {b.date} {b.time}hs · Seña ${b.deposit.amount.toLocaleString('es-AR')}</p>
                       </div>
                       <button
-                        id={`confirm-deposit-${b.id}`}
                         onClick={() => handleConfirmDeposit(b.id)}
                         className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 transition-colors"
                       >
@@ -150,67 +211,121 @@ const AgendaView = () => {
           );
         })()}
 
-        {/* Timeline view */}
-        <div className="bg-white rounded-2xl border border-primary-100 shadow-sm overflow-hidden">
-          <div className="grid" style={{ gridTemplateColumns: '64px 1fr' }}>
-            {/* Time column */}
+        {/* Leyenda */}
+        <div className="flex flex-wrap gap-3 text-xs">
+          {[
+            { color: 'bg-green-100 border-green-300', label: 'Confirmado' },
+            { color: 'bg-yellow-100 border-yellow-300', label: 'Pendiente' },
+            { color: 'bg-blue-100 border-blue-300', label: 'Completado' },
+            { color: 'bg-amber-100 border-amber-300', label: 'Cancelación solicitada' },
+            { color: 'bg-red-100 border-red-300 opacity-60', label: 'Cancelado' },
+            ...(showAvailable ? [{ color: 'bg-emerald-50 border-emerald-200', label: 'Disponible (30 min)' }] : []),
+          ].map(item => (
+            <div key={item.label} className="flex items-center gap-1.5">
+              <span className={`w-3 h-3 rounded border ${item.color}`} />
+              <span className="text-primary-500">{item.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Timeline multi-columna */}
+        <div className="bg-white rounded-2xl border border-primary-100 shadow-sm overflow-x-auto">
+          <div
+            className="grid"
+            style={{ gridTemplateColumns: `64px repeat(${displayedProfs.length}, minmax(160px, 1fr))` }}
+          >
+            {/* Header: hora vacía + nombre de cada profesional */}
+            <div className="border-r border-primary-100 border-b h-12" />
+            {displayedProfs.map(prof => (
+              <div
+                key={prof.id}
+                className="border-r border-b border-primary-100 h-12 flex items-center gap-2 px-3 last:border-r-0"
+              >
+                <img src={prof.avatar} alt={prof.name} className="w-7 h-7 rounded-full flex-shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-secondary truncate">{prof.name}</p>
+                  <p className="text-xs text-primary-400 truncate">{prof.role}</p>
+                </div>
+              </div>
+            ))}
+
+            {/* Columna de horas */}
             <div className="border-r border-primary-100">
-              <div className="h-12 border-b border-primary-100" />
-              {hours.map(h => (
-                <div key={h} className="h-16 border-b border-primary-50 flex items-center justify-center">
+              {HOURS.map(h => (
+                <div key={h} className="h-16 border-b border-primary-50 flex items-center justify-center last:border-b-0">
                   <span className="text-xs text-primary-400 font-medium">{h}</span>
                 </div>
               ))}
             </div>
 
-            {/* Bookings column */}
-            <div className="relative">
-              <div className="h-12 border-b border-primary-100 flex items-center px-4">
-                <span className="text-sm font-semibold text-secondary">
-                  {new Date(viewDate + 'T12:00').toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
-                </span>
-              </div>
-              <div className="relative">
-                {hours.map(h => (
-                  <div key={h} className="h-16 border-b border-primary-50" />
-                ))}
+            {/* Columna por profesional */}
+            {displayedProfs.map(prof => {
+              const profBookings = getProfBookings(prof.id);
+              const availableSlots = showAvailable ? getAvailableSlots(prof.id) : [];
 
-                {filteredBookings.map(booking => {
-                  const svc = getService(booking.serviceId);
-                  const prof = getProf(booking.professionalId);
-                  const [hh, mm] = booking.time.split(':').map(Number);
-                  const startHour = 9;
-                  const topPx = ((hh - startHour) * 60 + mm) * (64 / 60);
-                  const heightPx = ((svc?.duration || 60) / 60) * 64;
-                  const statusKey = booking.cancelRequest && booking.status !== 'cancelled'
-                    ? 'cancel_requested'
-                    : booking.status;
-                  const statusColor = STATUS_COLORS[statusKey] || STATUS_COLORS.pending;
+              return (
+                <div key={prof.id} className="relative border-r border-primary-100 last:border-r-0">
+                  {/* Filas de hora (fondo) */}
+                  {HOURS.map(h => (
+                    <div key={h} className="h-16 border-b border-primary-50 last:border-b-0" />
+                  ))}
 
-                  return (
-                    <div
-                      key={booking.id}
-                      className={`absolute left-2 right-2 rounded-lg border px-3 py-1.5 text-xs overflow-hidden ${statusColor}`}
-                      style={{ top: `${topPx}px`, height: `${Math.max(heightPx, 32)}px` }}
-                    >
-                      <p className="font-bold truncate">{booking.time} — {booking.clientName}</p>
-                      <p className="truncate">{svc?.name}</p>
-                      {prof && <p className="truncate opacity-70">{prof.name}</p>}
-                      {booking.deposit?.paid && !booking.deposit?.confirmedByAdmin && (
-                        <p className="text-amber-700 font-semibold">⚠️ Seña sin confirmar</p>
-                      )}
-                      {booking.cancelRequest && <p className="font-semibold">🔔 Cancel. solicitada</p>}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+                  {/* Slots disponibles */}
+                  {availableSlots.map(({ hour, min }) => {
+                    const topPx = ((hour - START_HOUR) * 60 + min) * (SLOT_HEIGHT / 60);
+                    const slotH = 30 * (SLOT_HEIGHT / 60);
+                    return (
+                      <div
+                        key={`${hour}-${min}`}
+                        className="absolute left-1 right-1 rounded border border-emerald-200 bg-emerald-50 flex items-center justify-center"
+                        style={{ top: `${topPx}px`, height: `${slotH}px` }}
+                      >
+                        <span className="text-emerald-600 text-xs font-medium">
+                          {String(hour).padStart(2, '0')}:{String(min).padStart(2, '0')} libre
+                        </span>
+                      </div>
+                    );
+                  })}
+
+                  {/* Turnos */}
+                  {profBookings.map(booking => {
+                    const svc = getService(booking.serviceId);
+                    const duration = svc?.duration || 60;
+                    const [bh, bm] = booking.time.split(':').map(Number);
+                    const topPx = ((bh - START_HOUR) * 60 + bm) * (SLOT_HEIGHT / 60);
+                    const heightPx = (duration / 60) * SLOT_HEIGHT;
+                    const statusKey = booking.cancelRequest && booking.status !== 'cancelled'
+                      ? 'cancel_requested'
+                      : booking.status;
+                    const statusColor = STATUS_COLORS[statusKey] || STATUS_COLORS.pending;
+                    const endTime = addMinutes(booking.time, duration);
+
+                    return (
+                      <div
+                        key={booking.id}
+                        className={`absolute left-1 right-1 rounded-lg border px-2 py-1.5 text-xs overflow-hidden ${statusColor}`}
+                        style={{ top: `${topPx}px`, height: `${Math.max(heightPx, 36)}px`, zIndex: 10 }}
+                      >
+                        <p className="font-bold truncate">{booking.time}–{endTime}</p>
+                        <p className="truncate font-semibold">{booking.clientName}</p>
+                        <p className="truncate opacity-80">{svc?.name}</p>
+                        <p className="truncate opacity-60">{duration} min</p>
+                        {booking.deposit?.paid && !booking.deposit?.confirmedByAdmin && (
+                          <p className="text-amber-700 font-semibold">⚠️ Seña</p>
+                        )}
+                        {booking.cancelRequest && <p className="font-semibold">🔔 Cancelación</p>}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {filteredBookings.length === 0 && (
+        {displayedProfs.length === 0 && (
           <div className="text-center py-8 text-primary-400 bg-white rounded-2xl border border-primary-100">
-            Sin turnos para esta fecha
+            Sin profesionales para mostrar
           </div>
         )}
       </div>
